@@ -14,7 +14,10 @@ class Payment extends Model
 
     public const METHODS = ['cash', 'telebirr', 'bank', 'chapa'];
 
-    protected $fillable = ['tenant_id', 'amount', 'paid_at', 'method', 'reference', 'source'];
+    /** Methods a landlord can log by hand; chapa payments arrive by webhook (phase 2). */
+    public const MANUAL_METHODS = ['cash', 'telebirr', 'bank'];
+
+    protected $fillable = ['tenant_id', 'lease_id', 'amount', 'paid_at', 'method', 'reference', 'notes', 'source', 'receipt_token'];
 
     protected $attributes = ['source' => 'manual'];
 
@@ -29,6 +32,21 @@ class Payment extends Model
     public function tenant(): BelongsTo
     {
         return $this->belongsTo(Tenant::class);
+    }
+
+    public function lease(): BelongsTo
+    {
+        return $this->belongsTo(Lease::class);
+    }
+
+    public function receiptNumber(): string
+    {
+        return 'R-'.str_pad((string) $this->id, 6, '0', STR_PAD_LEFT);
+    }
+
+    public function receiptUrl(): string
+    {
+        return route('receipts.show', $this->receipt_token);
     }
 
     public function allocations(): HasMany

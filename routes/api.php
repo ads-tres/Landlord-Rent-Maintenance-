@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\ChargeController;
+use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\LeaseController;
+use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\Api\V1\PropertyController;
 use App\Http\Controllers\Api\V1\RulesController;
 use App\Http\Controllers\Api\V1\TenantController;
@@ -28,5 +30,10 @@ Route::prefix('v1')->group(function () {
 
         Route::get('charges', [ChargeController::class, 'index']);
         Route::get('rules', RulesController::class);
+
+        Route::apiResource('payments', PaymentController::class)->except('update');
+        Route::get('payments/{payment}/receipt', [PaymentController::class, 'receipt']);
+
+        Route::get('dashboard', DashboardController::class);
     });
 });

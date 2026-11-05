@@ -12,6 +12,7 @@ class UpdateProfileRequest extends FormRequest
             'name' => ['sometimes', 'nullable', 'string', 'max:255'],
             'locale' => ['sometimes', 'in:am,en'],
             'calendar_pref' => ['sometimes', 'in:ethiopian,gregorian'],
+            'sms_reminders' => ['sometimes', 'boolean'],
         ];
     }
 }

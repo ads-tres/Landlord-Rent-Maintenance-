@@ -70,6 +70,11 @@ class Lease extends Model
         return $this->hasMany(Charge::class);
     }
 
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
     public function rentChanges(): HasMany
     {
         return $this->hasMany(RentChange::class);

@@ -13,3 +13,6 @@ Schedule::command('rent:generate-charges')->dailyAt('00:15')->withoutOverlapping
 
 // Charges past their due date and not fully paid become late.
 Schedule::command('rent:mark-late')->dailyAt('00:30')->withoutOverlapping()->onOneServer();
+
+// SMS reminders to tenants: 3 days before and on the due date (after the morning rush).
+Schedule::command('rent:send-reminders')->dailyAt('10:05')->withoutOverlapping()->onOneServer();
