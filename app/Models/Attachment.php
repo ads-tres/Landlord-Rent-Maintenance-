@@ -13,6 +13,9 @@ class Attachment extends Model
 
     protected $fillable = ['path', 'mime'];
 
+    /** Files are stored on the private local disk and served only through the API. */
+    public const DISK = 'local';
+
     public function attachable(): MorphTo
     {
         return $this->morphTo();

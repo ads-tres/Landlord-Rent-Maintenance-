@@ -13,6 +13,10 @@ class SmsMessage extends Model
 
     public const KIND_REMINDER_DUE = 'reminder_due';
 
+    public const KIND_REPAIR_UPDATE = 'repair_update';
+
+    public const KIND_REPAIR_LINK = 'repair_link';
+
     protected $fillable = ['landlord_id', 'to', 'kind', 'related_type', 'related_id', 'body', 'segments', 'status', 'error', 'sent_at'];
 
     protected function casts(): array

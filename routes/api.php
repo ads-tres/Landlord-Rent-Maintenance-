@@ -1,14 +1,18 @@
 <?php
 
+use App\Http\Controllers\Api\V1\AttachmentController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\ChargeController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\LeaseController;
+use App\Http\Controllers\Api\V1\MaintenanceController;
 use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\Api\V1\PropertyController;
+use App\Http\Controllers\Api\V1\RepairLinkController;
 use App\Http\Controllers\Api\V1\RulesController;
 use App\Http\Controllers\Api\V1\TenantController;
 use App\Http\Controllers\Api\V1\UnitController;
+use App\Http\Controllers\Api\V1\UnitListController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -22,6 +26,7 @@ Route::prefix('v1')->group(function () {
 
         Route::apiResource('properties', PropertyController::class);
         Route::apiResource('properties.units', UnitController::class)->shallow();
+        Route::get('units', UnitListController::class);
         Route::apiResource('tenants', TenantController::class);
 
         Route::apiResource('leases', LeaseController::class)->except('destroy');
@@ -35,5 +40,11 @@ Route::prefix('v1')->group(function () {
         Route::get('payments/{payment}/receipt', [PaymentController::class, 'receipt']);
 
         Route::get('dashboard', DashboardController::class);
+
+        Route::apiResource('maintenance', MaintenanceController::class)->except('destroy');
+        Route::post('maintenance/{maintenance}/photos', [MaintenanceController::class, 'addPhoto']);
+        Route::get('attachments/{attachment}', [AttachmentController::class, 'show']);
+        Route::post('leases/{lease}/repair-link/send', [RepairLinkController::class, 'send']);
+        Route::post('leases/{lease}/repair-link/reset', [RepairLinkController::class, 'reset']);
     });
 });
