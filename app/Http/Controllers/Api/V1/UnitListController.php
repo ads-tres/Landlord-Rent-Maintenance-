@@ -14,7 +14,8 @@ class UnitListController extends Controller
         $units = Unit::query()
             ->with(['property:id,name', 'activeLease.tenant:id,full_name'])
             ->get()
-            ->sortBy(fn (Unit $u) => [$u->property->name, $u->label], SORT_NATURAL)
+            ->sort(fn (Unit $a, Unit $b) => strnatcasecmp($a->property->name, $b->property->name)
+                ?: strnatcasecmp($a->label, $b->label))
             ->values()
             ->map(fn (Unit $u) => [
                 'id' => $u->id,

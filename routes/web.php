@@ -1,8 +1,11 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Web\ReceiptController;
 use App\Http\Controllers\Web\RepairPageController;
 use App\Http\Controllers\Web\WaitlistController;
+use App\Http\Middleware\EnsureAdmin;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [WaitlistController::class, 'show'])->name('landing');
@@ -26,3 +29,26 @@ Route::post('/fix/{token}', [RepairPageController::class, 'store'])
     ->where('token', '[a-z0-9]{10}')
     ->middleware('throttle:10,60')
     ->name('repairs.public.store');
+
+// Pilot admin panel (SMS-code login, admin role only).
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('login', [AdminAuthController::class, 'show'])->name('login');
+    Route::post('login', [AdminAuthController::class, 'sendCode'])->middleware('throttle:otp')->name('login.send');
+    Route::get('login/code', [AdminAuthController::class, 'showCode'])->name('login.code');
+    Route::post('login/code', [AdminAuthController::class, 'verify'])->middleware('throttle:10,1')->name('login.verify');
+
+    Route::middleware(EnsureAdmin::class)->group(function () {
+        Route::post('logout', [AdminAuthController::class, 'logout'])->name('logout');
+        Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+        Route::get('waitlist', [AdminController::class, 'waitlist'])->name('waitlist');
+        Route::get('waitlist/export', [AdminController::class, 'exportWaitlist'])->name('waitlist.export');
+        Route::patch('waitlist/{signup}', [AdminController::class, 'updateSignup'])->name('waitlist.update');
+        Route::post('landlords', [AdminController::class, 'storeLandlord'])->name('landlords.store');
+        Route::get('landlords/{landlord}', [AdminController::class, 'showLandlord'])->name('landlords.show');
+        Route::post('landlords/{landlord}/import', [AdminController::class, 'previewImport'])->name('landlords.import.preview');
+        Route::post('landlords/{landlord}/import/confirm', [AdminController::class, 'confirmImport'])->name('landlords.import.confirm');
+        Route::get('import-template.csv', [AdminController::class, 'template'])->name('import.template');
+        Route::get('settings', [AdminController::class, 'settings'])->name('settings');
+        Route::put('settings', [AdminController::class, 'updateSettings'])->name('settings.update');
+    });
+});

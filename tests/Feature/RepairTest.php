@@ -185,12 +185,15 @@ class RepairTest extends TestCase
 
     public function test_units_list_for_pickers(): void
     {
+        // More than one unit, sorted naturally (Room 3 before Room 10).
+        Unit::factory()->for($this->unit->property)->create(['landlord_id' => $this->landlord->id, 'label' => 'Room 10']);
         $this->actingAsLandlord($this->landlord);
 
         $this->getJson('/api/v1/units')
             ->assertOk()
             ->assertJsonPath('data.0.label', 'Room 3')
             ->assertJsonPath('data.0.property_name', 'Bole Compound')
-            ->assertJsonPath('data.0.tenant_name', $this->lease->tenant->full_name);
+            ->assertJsonPath('data.0.tenant_name', $this->lease->tenant->full_name)
+            ->assertJsonPath('data.1.label', 'Room 10');
     }
 }
