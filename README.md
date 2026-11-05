@@ -43,6 +43,7 @@ Tenant web pages ──────┘          │
 | Payment logging (partial and advance), receipts (PDF, tenant web page, SMS), rent reminders, dashboard | ✅ |
 | Repairs: tenant link with photo, status updates by SMS, private photos | ✅ |
 | Quarterly income report (JSON + PDF), Ethiopian calendar, privacy tools, backups, offline-safe payments | ✅ |
+| Pilot tools: admin panel, notebook import, pilot metrics, deployment kit | ✅ |
 | Pilot with 10 landlords | ⏳ next |
 
 ## API (v1)
@@ -143,6 +144,24 @@ Phone numbers are accepted as `09…`, `07…`, `2519…` or `+2519…` and stor
   Ethiopia**, e.g. with `rsync` from cron.
 - Payments can carry a `client_ref` from the app. Sending the same one again returns the existing payment
   instead of a duplicate, so payments logged offline sync safely.
+
+## Pilot admin (`/admin`)
+
+- Create an admin with `php artisan admin:create 09XXXXXXXX --name="..."`, then log in with an SMS code.
+  Admin accounts can't see landlord data in the app API.
+- **Pilot:** weekly active landlords, share of rent paid by its due date this month, SMS sent and failed,
+  and a per-landlord table.
+- **Waitlist:** filter by number of units (3+ by default), status and search, add notes, export CSV, and
+  **Make pilot** to create the landlord account.
+- **Notebook import:** download the CSV template, fill one row per unit from the landlord's notebook (dates
+  in Gregorian or Ethiopian with `EC`), upload, check the preview, then confirm. It creates properties,
+  units, tenants, leases and charges, plus an opening payment for `paid_through`.
+- **Settings:** the yearly rent cap.
+
+## Deployment
+
+See [`deploy/README.md`](deploy/README.md) for a one-command setup on an Ubuntu VPS in Ethiopia (nginx,
+HTTPS, PostgreSQL, queue worker, scheduler, firewall), `deploy/deploy.sh` for updates, and offsite backups.
 
 ## Local setup
 
