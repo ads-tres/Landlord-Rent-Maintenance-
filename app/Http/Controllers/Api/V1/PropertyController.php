@@ -34,7 +34,7 @@ class PropertyController extends Controller
         Gate::authorize('view', $property);
 
         return new PropertyResource(
-            $property->load(['units' => fn ($q) => $q->orderBy('label')])->loadCount(['units', 'vacantUnits'])
+            $property->load(['units' => fn ($q) => $q->orderBy('label'), 'units.activeLease.tenant'])->loadCount(['units', 'vacantUnits'])
         );
     }
 

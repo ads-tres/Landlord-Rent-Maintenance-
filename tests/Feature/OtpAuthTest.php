@@ -96,4 +96,16 @@ class OtpAuthTest extends TestCase
     {
         $this->getJson('/api/v1/properties')->assertUnauthorized();
     }
+
+    public function test_accept_language_header_wins_over_saved_preference(): void
+    {
+        $this->actingAsLandlord(User::factory()->create(['locale' => 'am']));
+
+        $this->postJson('/api/v1/properties', [], ['Accept-Language' => 'en'])
+            ->assertJsonPath('errors.name.0', 'The name field is required.');
+
+        // No usable header: fall back to the saved preference.
+        $this->postJson('/api/v1/properties', [], ['Accept-Language' => ''])
+            ->assertJsonPath('errors.name.0', fn (string $m) => str_contains($m, 'ያስፈልጋል'));
+    }
 }

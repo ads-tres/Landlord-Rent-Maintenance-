@@ -1,7 +1,10 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\ChargeController;
+use App\Http\Controllers\Api\V1\LeaseController;
 use App\Http\Controllers\Api\V1\PropertyController;
+use App\Http\Controllers\Api\V1\RulesController;
 use App\Http\Controllers\Api\V1\TenantController;
 use App\Http\Controllers\Api\V1\UnitController;
 use Illuminate\Support\Facades\Route;
@@ -18,5 +21,12 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('properties', PropertyController::class);
         Route::apiResource('properties.units', UnitController::class)->shallow();
         Route::apiResource('tenants', TenantController::class);
+
+        Route::apiResource('leases', LeaseController::class)->except('destroy');
+        Route::post('leases/{lease}/end', [LeaseController::class, 'end']);
+        Route::post('leases/{lease}/rent-change', [LeaseController::class, 'rentChange']);
+
+        Route::get('charges', [ChargeController::class, 'index']);
+        Route::get('rules', RulesController::class);
     });
 });
