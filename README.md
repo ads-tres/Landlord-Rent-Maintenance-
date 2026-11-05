@@ -41,8 +41,8 @@ Tenant web pages ──────┘          │
 | Full v1 database schema (leases, charges, payments, allocations, repairs, attachments…) | ✅ |
 | Leases (directive fields, 2-year minimum), rent schedule, rent-cap check, late flags | ✅ |
 | Payment logging (partial and advance), receipts (PDF, tenant web page, SMS), rent reminders, dashboard | ✅ |
-| Repairs with tenant link and photos | ⏳ next |
-| Quarterly report, Ethiopian calendar | ⏳ |
+| Repairs: tenant link with photo, status updates by SMS, private photos | ✅ |
+| Quarterly report, Ethiopian calendar, offline-friendly app | ⏳ next |
 
 ## API (v1)
 
@@ -71,6 +71,13 @@ to localize messages.
 | GET / DELETE | `/payments/{id}` | DELETE removes a payment logged by mistake and puts its months back to unpaid |
 | GET | `/payments/{id}/receipt` | Receipt PDF (A5, Amharic or English) |
 | GET | `/dashboard` | Collected this month, outstanding, late tenants, open repairs, leases ending within 60 days |
+| GET / POST | `/maintenance` | `?status=open\|in_progress\|done\|active&unit_id=`. POST is multipart: `{unit_id, title, category?, description?, photos[]?}` |
+| GET / PATCH | `/maintenance/{id}` | PATCH `{status?, note?, notify_tenant?}` texts the tenant when status changes (on by default) |
+| POST | `/maintenance/{id}/photos` | Multipart `photo` (max 8 per repair) |
+| GET | `/attachments/{id}` | Private photo, owner only |
+| POST | `/leases/{id}/repair-link/send` | Texts the tenant their repair link |
+| POST | `/leases/{id}/repair-link/reset` | New link; the old one stops working |
+| GET | `/units` | All units with property and tenant names (for pickers) |
 | GET | `/rules` | `{rent_cap_percent, min_lease_years}` for checks in the app |
 
 **Amounts are integers in santim** (Br 150.00 = `15000`).
@@ -100,6 +107,15 @@ Phone numbers are accepted as `09…`, `07…`, `2519…` or `+2519…` and stor
 - `rent:send-reminders` (daily 10:05) texts tenants 3 days before and on the due date, once per charge.
   Landlords can turn it off (`PATCH /auth/me {sms_reminders: false}`).
 - SMS goes through the queue: run `php artisan queue:work` on the server.
+
+## Repairs
+
+- Every lease has a repair link, `/fix/{token}`. It's a light page with no login and no scripts, where the
+  tenant picks a category, describes the problem, adds a photo and sees the status of recent requests.
+  It works only while the lease is active, and the landlord can reset it.
+- Photos are shrunk to at most 1280 px JPEG (EXIF location removed) and stored on the private `local` disk.
+  The app loads them through `/api/v1/attachments/{id}` with the landlord's token.
+- When the landlord moves a repair to in progress or done, the tenant gets an SMS, with an optional note.
 
 ## Local setup
 

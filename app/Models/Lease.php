@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class Lease extends Model
 {
@@ -21,7 +22,7 @@ class Lease extends Model
 
     protected $fillable = [
         'unit_id', 'tenant_id', 'start_date', 'end_date', 'terminated_on', 'monthly_rent', 'deposit',
-        'due_day', 'due_calendar', 'condition_notes', 'registered_at', 'status',
+        'due_day', 'due_calendar', 'condition_notes', 'registered_at', 'status', 'repair_token',
     ];
 
     protected $attributes = [
@@ -42,6 +43,32 @@ class Lease extends Model
             'deposit' => 'integer',
             'due_day' => 'integer',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::creating(function (Lease $lease) {
+            $lease->repair_token ??= static::newRepairToken();
+        });
+    }
+
+    public static function newRepairToken(): string
+    {
+        do {
+            $token = Str::lower(Str::random(10));
+        } while (static::query()->withoutGlobalScopes()->where('repair_token', $token)->exists());
+
+        return $token;
+    }
+
+    public function repairUrl(): ?string
+    {
+        return $this->repair_token ? route('repairs.public.show', $this->repair_token) : null;
+    }
+
+    public function maintenanceRequests(): HasMany
+    {
+        return $this->hasMany(MaintenanceRequest::class);
     }
 
     public function scopeActive(Builder $query): void

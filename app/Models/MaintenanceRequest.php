@@ -13,9 +13,14 @@ class MaintenanceRequest extends Model
 
     public const STATUSES = ['open', 'in_progress', 'done'];
 
-    protected $fillable = ['unit_id', 'tenant_id', 'title', 'description', 'status', 'opened_at', 'closed_at'];
+    public const CATEGORIES = ['water', 'electric', 'plumbing', 'door_lock', 'roof', 'appliance', 'other'];
 
-    protected $attributes = ['status' => 'open'];
+    protected $fillable = [
+        'unit_id', 'tenant_id', 'lease_id', 'title', 'category', 'description', 'resolution_note',
+        'status', 'source', 'opened_at', 'closed_at',
+    ];
+
+    protected $attributes = ['status' => 'open', 'category' => 'other', 'source' => 'landlord'];
 
     protected function casts(): array
     {
@@ -33,6 +38,11 @@ class MaintenanceRequest extends Model
     public function tenant(): BelongsTo
     {
         return $this->belongsTo(Tenant::class);
+    }
+
+    public function lease(): BelongsTo
+    {
+        return $this->belongsTo(Lease::class);
     }
 
     public function attachments(): MorphMany
