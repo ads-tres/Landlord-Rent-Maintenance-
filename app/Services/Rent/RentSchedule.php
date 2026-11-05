@@ -90,21 +90,27 @@ class RentSchedule
                 continue;
             }
 
-            $charge = new Charge([
-                'period' => $period,
-                'type' => 'rent',
-                'amount_due' => $this->rentFor($lease, $period),
-                'due_date' => $this->dueDate($lease, $period),
-                'status' => Charge::STATUS_DUE,
-            ]);
-            $charge->landlord_id = $lease->landlord_id;
-            $charge->lease()->associate($lease);
-            $charge->save();
-
-            $created->push($charge);
+            $created->push($this->createCharge($lease, $period));
         }
 
         return $created;
+    }
+
+    /** Creates the rent charge for one period (used for advance payments too). */
+    public function createCharge(Lease $lease, string $period): Charge
+    {
+        $charge = new Charge([
+            'period' => $period,
+            'type' => 'rent',
+            'amount_due' => $this->rentFor($lease, $period),
+            'due_date' => $this->dueDate($lease, $period),
+            'status' => Charge::STATUS_DUE,
+        ]);
+        $charge->landlord_id = $lease->landlord_id;
+        $charge->lease()->associate($lease);
+        $charge->save();
+
+        return $charge;
     }
 
     /**

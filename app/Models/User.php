@@ -16,12 +16,13 @@ class User extends Authenticatable
 
     public const ROLE_LANDLORD = 'landlord';
 
-    protected $fillable = ['phone', 'name', 'email', 'locale', 'calendar_pref', 'role', 'phone_verified_at'];
+    protected $fillable = ['phone', 'name', 'email', 'locale', 'calendar_pref', 'sms_reminders', 'role', 'phone_verified_at'];
 
     protected function casts(): array
     {
         return [
             'phone_verified_at' => 'datetime',
+            'sms_reminders' => 'boolean',
         ];
     }
 

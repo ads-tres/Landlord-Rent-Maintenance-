@@ -40,9 +40,9 @@ Tenant web pages ──────┘          │
 | Properties, units, tenants CRUD | ✅ |
 | Full v1 database schema (leases, charges, payments, allocations, repairs, attachments…) | ✅ |
 | Leases (directive fields, 2-year minimum), rent schedule, rent-cap check, late flags | ✅ |
-| Payment logging, receipts (PDF + SMS), rent reminders | ⏳ next |
-| Repairs with tenant link and photos | ⏳ |
-| Quarterly report, dashboard, Ethiopian calendar | ⏳ |
+| Payment logging (partial and advance), receipts (PDF, tenant web page, SMS), rent reminders, dashboard | ✅ |
+| Repairs with tenant link and photos | ⏳ next |
+| Quarterly report, Ethiopian calendar | ⏳ |
 
 ## API (v1)
 
@@ -67,6 +67,10 @@ to localize messages.
 | POST | `/leases/{id}/end` | `{ended_on}`. Frees the unit and removes unpaid charges for later months |
 | POST | `/leases/{id}/rent-change` | `{new_rent, effective_date}`. Refused above the yearly cap; reprices unpaid charges from that month |
 | GET | `/charges` | `?period=YYYY-MM&status=due\|partial\|paid\|late\|unpaid&lease_id=` |
+| GET / POST | `/payments` | `?lease_id=&tenant_id=&from=&to=`. Create: `{lease_id, amount, paid_at, method: cash\|telebirr\|bank, reference, notes?, send_sms?}`. Telebirr and bank need a reference, and a reference can't be logged twice |
+| GET / DELETE | `/payments/{id}` | DELETE removes a payment logged by mistake and puts its months back to unpaid |
+| GET | `/payments/{id}/receipt` | Receipt PDF (A5, Amharic or English) |
+| GET | `/dashboard` | Collected this month, outstanding, late tenants, open repairs, leases ending within 60 days |
 | GET | `/rules` | `{rent_cap_percent, min_lease_years}` for checks in the app |
 
 **Amounts are integers in santim** (Br 150.00 = `15000`).
@@ -82,6 +86,20 @@ Phone numbers are accepted as `09…`, `07…`, `2519…` or `+2519…` and stor
 - Scheduled jobs (`routes/console.php`): `rent:generate-charges` (daily 00:15) and `rent:mark-late` (daily 00:30).
   On the server, run `php artisan schedule:run` every minute from cron.
 - Periods follow the Gregorian calendar for now. Ethiopian-calendar due dates come with the calendar feature.
+
+## Payments and receipts
+
+- A payment covers the oldest unpaid month first, then later months. Extra money pays months in advance
+  (their charges are created early), up to the end of the lease.
+- A month is `paid` when fully covered, `partial` while partly paid and not yet due, and `late` once its
+  due date passes unpaid.
+- The tenant gets an SMS with a short receipt link (`/r/{token}`, a light page with no login). The landlord can
+  also download a PDF. PDFs use `resources/fonts/NotoSansEthiopic-*.ttf`, which covers Latin and Ge'ez.
+- Every SMS is logged in `sms_messages` with its segment count (160 GSM / 70 Unicode characters), so costs
+  can be tracked per landlord.
+- `rent:send-reminders` (daily 10:05) texts tenants 3 days before and on the due date, once per charge.
+  Landlords can turn it off (`PATCH /auth/me {sms_reminders: false}`).
+- SMS goes through the queue: run `php artisan queue:work` on the server.
 
 ## Local setup
 

@@ -37,6 +37,25 @@ class Charge extends Model
         return $this->belongsTo(Lease::class);
     }
 
+    public function amountPaid(): int
+    {
+        return (int) $this->allocations()->sum('amount');
+    }
+
+    /** Recomputes due / partial / paid / late from the money allocated and the due date. */
+    public function refreshStatus(): void
+    {
+        $paid = $this->amountPaid();
+
+        $this->status = match (true) {
+            $paid >= $this->amount_due => self::STATUS_PAID,
+            $this->due_date->lt(today()) => self::STATUS_LATE,
+            $paid > 0 => self::STATUS_PARTIAL,
+            default => self::STATUS_DUE,
+        };
+        $this->save();
+    }
+
     public function allocations(): HasMany
     {
         return $this->hasMany(PaymentAllocation::class);

@@ -17,6 +17,7 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'locale' => $this->locale,
             'calendar_pref' => $this->calendar_pref,
+            'sms_reminders' => (bool) $this->sms_reminders,
             'role' => $this->role,
         ];
     }
