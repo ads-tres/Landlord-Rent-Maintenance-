@@ -15,7 +15,7 @@ class RentRemindersTest extends TestCase
 
     private function leaseDueOn(int $dueDay, array $landlord = []): Lease
     {
-        $owner = User::factory()->create(['locale' => 'en', 'name' => 'Abel', ...$landlord]);
+        $owner = User::factory()->create(['locale' => 'en', 'name' => 'Abel', 'calendar_pref' => 'gregorian', ...$landlord]);
         $property = Property::factory()->for($owner, 'landlord')->create();
         $unit = Unit::factory()->for($property)->create(['landlord_id' => $owner->id, 'label' => 'Room 3']);
 

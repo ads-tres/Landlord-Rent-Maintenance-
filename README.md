@@ -42,7 +42,8 @@ Tenant web pages ──────┘          │
 | Leases (directive fields, 2-year minimum), rent schedule, rent-cap check, late flags | ✅ |
 | Payment logging (partial and advance), receipts (PDF, tenant web page, SMS), rent reminders, dashboard | ✅ |
 | Repairs: tenant link with photo, status updates by SMS, private photos | ✅ |
-| Quarterly report, Ethiopian calendar, offline-friendly app | ⏳ next |
+| Quarterly income report (JSON + PDF), Ethiopian calendar, privacy tools, backups, offline-safe payments | ✅ |
+| Pilot with 10 landlords | ⏳ next |
 
 ## API (v1)
 
@@ -78,6 +79,9 @@ to localize messages.
 | POST | `/leases/{id}/repair-link/send` | Texts the tenant their repair link |
 | POST | `/leases/{id}/repair-link/reset` | New link; the old one stops working |
 | GET | `/units` | All units with property and tenant names (for pickers) |
+| GET | `/reports/quarterly` | `?year=&quarter=&calendar=ethiopian\|gregorian&format=pdf`. Defaults to the current quarter in the landlord's calendar |
+| GET | `/tenants/{id}/export` | Tenant's data as JSON (right of access) |
+| POST | `/tenants/{id}/anonymize` | Removes name, phone, ID and address, and deletes repair photos. Payments stay. Not allowed with an active lease |
 | GET | `/rules` | `{rent_cap_percent, min_lease_years}` for checks in the app |
 
 **Amounts are integers in santim** (Br 150.00 = `15000`).
@@ -116,6 +120,29 @@ Phone numbers are accepted as `09…`, `07…`, `2519…` or `+2519…` and stor
 - Photos are shrunk to at most 1280 px JPEG (EXIF location removed) and stored on the private `local` disk.
   The app loads them through `/api/v1/attachments/{id}` with the landlord's token.
 - When the landlord moves a repair to in progress or done, the tenant gets an SMS, with an optional note.
+
+## Ethiopian calendar and quarterly report
+
+- Dates are stored in Gregorian and shown in the landlord's `calendar_pref` (`ethiopian` by default), using
+  `andegna/calender` (`app/Support/EthiopianDate.php`, `DateDisplay.php`). This applies to receipts, SMS,
+  the repair page and the report.
+- A rent period (Gregorian month) shows as the Ethiopian months it spans, e.g. "ጥቅምት–ኅዳር 2019".
+- The quarterly report sums **rent received** (by payment date). Ethiopian mode uses fiscal-year quarters
+  (Q1 Hamle–Meskerem, Q2 Tikimt–Tahsas, Q3 Tir–Megabit, Q4 Miyazia–Sene); Gregorian mode uses calendar
+  quarters. **No tax is calculated**: the rules changed in 2025 and need an accountant's confirmation.
+
+## Privacy, backups and offline payments
+
+- `/privacy` is the public privacy notice in Amharic and English (a draft for legal review). Tenants are
+  asked to acknowledge it when they're added (`consents`).
+- A tenant with payment records can't be hard-deleted; anonymize them instead, so the landlord's income
+  history stays complete.
+- Breach steps: [`docs/incident-response.md`](docs/incident-response.md) (72-hour ECA notice).
+- `backup:database` (daily 02:10) writes a gzipped `pg_dump` (or SQLite copy) to
+  `storage/app/private/backups` and keeps 14 days. **Copy that folder daily to a second server inside
+  Ethiopia**, e.g. with `rsync` from cron.
+- Payments can carry a `client_ref` from the app. Sending the same one again returns the existing payment
+  instead of a duplicate, so payments logged offline sync safely.
 
 ## Local setup
 

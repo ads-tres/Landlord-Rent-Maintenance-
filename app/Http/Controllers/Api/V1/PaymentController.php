@@ -11,8 +11,10 @@ use App\Models\SmsMessage;
 use App\Services\Payments\PaymentRecorder;
 use App\Services\Payments\ReceiptData;
 use App\Services\Sms\SmsNotifier;
+use App\Support\DateDisplay;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
@@ -53,8 +55,14 @@ class PaymentController extends Controller
      * POST /payments — logs a payment, allocates it to charges (oldest first, then
      * months ahead) and, unless send_sms is false, texts the tenant a receipt link.
      */
-    public function store(StorePaymentRequest $request): PaymentResource
+    public function store(StorePaymentRequest $request): PaymentResource|JsonResponse
     {
+        if ($existing = $request->existingPayment()) {
+            return (new PaymentResource($existing->load(['tenant', 'allocations.charge'])))
+                ->response()
+                ->setStatusCode(200);
+        }
+
         $data = $request->validated();
         $lease = Lease::query()->with(['tenant', 'unit'])->findOrFail($data['lease_id']);
 
@@ -100,15 +108,14 @@ class PaymentController extends Controller
 
     private function queueReceiptSms(Payment $payment, string $locale): SmsMessage
     {
-        $payment->loadMissing(['tenant', 'lease.unit', 'allocations.charge']);
+        $payment->loadMissing(['landlord', 'tenant', 'lease.unit', 'allocations.charge']);
         $periods = $payment->allocations->map(fn ($a) => $a->charge->period)->sort()->values();
+        $calendar = $payment->landlord->calendar_pref ?? 'gregorian';
 
         $body = __('sms.receipt', [
             'amount' => ReceiptData::birr($payment->amount, $locale),
             'unit' => $payment->lease?->unit?->label ?? '',
-            'months' => $periods->count() > 1
-                ? ReceiptData::period($periods->first(), $locale).' – '.ReceiptData::period($periods->last(), $locale)
-                : ReceiptData::period($periods->first(), $locale),
+            'months' => DateDisplay::periodRange($periods->first(), $periods->last(), $locale, $calendar),
             'url' => $payment->receiptUrl(),
             'app' => config('app.name'),
         ], $locale);

@@ -45,7 +45,7 @@ class SendRentReminders extends Command
                         $body = __('sms.'.$kind, [
                             'amount' => ReceiptData::birr($charge->amount_due - (int) $charge->paid, $locale),
                             'unit' => $charge->lease->unit->label,
-                            'date' => ReceiptData::date($charge->due_date, $locale),
+                            'date' => ReceiptData::date($charge->due_date, $locale, $charge->landlord->calendar_pref ?? 'gregorian'),
                             'landlord' => $charge->landlord->name ?: $charge->landlord->phone,
                             'app' => config('app.name'),
                         ], $locale);

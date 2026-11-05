@@ -17,7 +17,7 @@ class Payment extends Model
     /** Methods a landlord can log by hand; chapa payments arrive by webhook (phase 2). */
     public const MANUAL_METHODS = ['cash', 'telebirr', 'bank'];
 
-    protected $fillable = ['tenant_id', 'lease_id', 'amount', 'paid_at', 'method', 'reference', 'notes', 'source', 'receipt_token'];
+    protected $fillable = ['tenant_id', 'lease_id', 'amount', 'paid_at', 'method', 'reference', 'notes', 'source', 'receipt_token', 'client_ref'];
 
     protected $attributes = ['source' => 'manual'];
 

@@ -70,7 +70,7 @@
                 <div class="item">
                     <div>
                         <div>{{ $item->title }}</div>
-                        <div class="muted">{{ $item->opened_at->locale(app()->getLocale())->isoFormat('D MMM YYYY') }}@if ($item->resolution_note) · {{ $item->resolution_note }}@endif</div>
+                        <div class="muted">{{ \App\Support\DateDisplay::date($item->opened_at, app()->getLocale(), $lease->landlord->calendar_pref ?? 'gregorian') }}@if ($item->resolution_note) · {{ $item->resolution_note }}@endif</div>
                     </div>
                     <span class="pill s-{{ $item->status }}">{{ __('repairs.statuses.'.$item->status) }}</span>
                 </div>
@@ -78,7 +78,7 @@
         </div>
     @endif
 
-    <p class="muted" style="text-align:center">{{ __('repairs.page.privacy') }}</p>
+    <p class="muted" style="text-align:center">{{ __('repairs.page.privacy') }} <a href="{{ route('privacy') }}">{{ __('privacy.title') }}</a></p>
     <a class="lang" href="?lang={{ app()->getLocale() === 'am' ? 'en' : 'am' }}">{{ app()->getLocale() === 'am' ? 'English' : 'አማርኛ' }}</a>
 </div>
 </body>

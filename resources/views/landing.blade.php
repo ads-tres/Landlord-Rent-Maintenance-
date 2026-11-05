@@ -141,6 +141,7 @@
     <footer>
         <div>&copy; {{ date('Y') }} {{ config('app.name') }}</div>
         <div>{{ __('landing.disclaimer') }}</div>
+        <div><a href="{{ route('privacy') }}" style="color:inherit">{{ __('privacy.title') }}</a></div>
     </footer>
 </div>
 </body>
