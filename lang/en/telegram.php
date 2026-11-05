@@ -1,0 +1,25 @@
+<?php
+
+return [
+    'welcome' => "Welcome to :app.\nTenants: tap the button below to share your phone number, so we can find your rental.\nLandlords: open the app → Settings → Connect Telegram.",
+    'share_contact' => 'Share my phone number',
+    'own_contact_only' => 'Please share your own phone number with the button below.',
+    'not_found' => 'This number is not registered as a tenant. Ask your landlord to add you in :app with this number.',
+    'consent' => "Found your rental: :units.\n\nReceipts, rent reminders and repair updates can come here instead of SMS. Messages pass through Telegram's servers outside Ethiopia; we keep names and ID numbers out of them. You can stop any time with /stop.",
+    'agree' => 'Yes, send them here',
+    'decline' => 'No, keep SMS',
+    'agreed' => "Done. You'll get messages here.\nTo report a repair, send /repair.",
+    'declined' => "OK. You'll keep getting SMS.",
+    'landlord_linked' => "Connected. You'll get an alert here when a tenant reports a repair.",
+    'code_invalid' => 'This link has expired. In the app, open Settings → Connect Telegram again.',
+    'link_first' => 'First share your phone number with /start.',
+    'no_active_lease' => 'You have no active lease, so repairs cannot be reported here.',
+    'choose_unit' => 'Which home is the repair for?',
+    'repair_prompt' => 'Describe the problem. You can send text, a photo (with a caption) or a voice note.',
+    'repair_sent' => 'Sent to your landlord. You will get an update here when work starts.',
+    'repair_photo_title' => 'Photo from Telegram',
+    'repair_voice_title' => 'Voice note from Telegram',
+    'stopped' => "Stopped. You'll get SMS again. Send /start to connect again.",
+    'help' => "Commands:\n/repair: report a repair\n/stop: stop Telegram messages (back to SMS)",
+    'new_repair' => 'New repair at :unit: :title. Open :app to see it.',
+];

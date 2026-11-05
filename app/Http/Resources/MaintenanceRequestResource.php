@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use App\Models\MaintenanceRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\URL;
 
 /** @mixin MaintenanceRequest */
 class MaintenanceRequestResource extends JsonResource
@@ -34,10 +35,18 @@ class MaintenanceRequestResource extends JsonResource
                 'phone' => $this->tenant->phone,
             ] : null),
             'photos_count' => $this->whenCounted('attachments'),
-            'photos' => $this->whenLoaded('attachments', fn () => $this->attachments->map(fn ($a) => [
-                'id' => $a->id,
-                'url' => url("/api/v1/attachments/{$a->id}"),
-            ])),
+            'photos' => $this->whenLoaded('attachments', fn () => $this->attachments
+                ->filter(fn ($a) => str_starts_with($a->mime, 'image/'))
+                ->values()
+                ->map(fn ($a) => ['id' => $a->id, 'url' => url("/api/v1/attachments/{$a->id}")])),
+            // Voice notes from Telegram, with a 30-minute link any audio player can open.
+            'voice_notes' => $this->whenLoaded('attachments', fn () => $this->attachments
+                ->filter(fn ($a) => str_starts_with($a->mime, 'audio/'))
+                ->values()
+                ->map(fn ($a) => [
+                    'id' => $a->id,
+                    'url' => URL::temporarySignedRoute('attachments.signed', now()->addMinutes(30), ['attachment' => $a->id]),
+                ])),
         ];
     }
 }

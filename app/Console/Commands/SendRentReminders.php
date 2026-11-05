@@ -50,7 +50,7 @@ class SendRentReminders extends Command
                             'app' => config('app.name'),
                         ], $locale);
 
-                        $sms->queue($charge->landlord_id, $charge->lease->tenant->phone, $kind, $body, $charge);
+                        $sms->toTenant($charge->lease->tenant, $kind, $body, $charge);
                         $sent++;
                     }
                 });

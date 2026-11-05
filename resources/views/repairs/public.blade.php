@@ -79,6 +79,9 @@
     @endif
 
     <p class="muted" style="text-align:center">{{ __('repairs.page.privacy') }} <a href="{{ route('privacy') }}">{{ __('privacy.title') }}</a></p>
+    @if (config('telegram.username'))
+        <p style="text-align:center"><a href="https://t.me/{{ config('telegram.username') }}?start=tenant">{{ __('payments.telegram_cta') }}</a></p>
+    @endif
     <a class="lang" href="?lang={{ app()->getLocale() === 'am' ? 'en' : 'am' }}">{{ app()->getLocale() === 'am' ? 'English' : 'አማርኛ' }}</a>
 </div>
 </body>

@@ -120,6 +120,6 @@ class PaymentController extends Controller
             'app' => config('app.name'),
         ], $locale);
 
-        return $this->sms->queue($payment->landlord_id, $payment->tenant->phone, SmsMessage::KIND_RECEIPT, $body, $payment);
+        return $this->sms->toTenant($payment->tenant, SmsMessage::KIND_RECEIPT, $body, $payment);
     }
 }

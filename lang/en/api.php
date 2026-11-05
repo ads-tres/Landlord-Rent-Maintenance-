@@ -6,4 +6,5 @@ return [
     'tenant_has_active_lease' => 'This tenant has an active lease.',
     'tenant_has_payments' => 'This tenant has payment records. Remove their personal details instead, so your income records stay complete.',
     'removed_tenant' => 'Removed tenant #:id',
+    'telegram_off' => 'Telegram is not set up on this server yet.',
 ];

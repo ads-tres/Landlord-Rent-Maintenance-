@@ -6,6 +6,7 @@ use App\Models\Lease;
 use App\Models\MaintenanceRequest;
 use App\Models\SmsMessage;
 use App\Models\Unit;
+use App\Models\User;
 use App\Services\Sms\SmsNotifier;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -44,8 +45,27 @@ class RepairService
                 $this->photos->store($photo, $request, $unit->landlord_id);
             }
 
+            if ($source === 'tenant') {
+                $this->alertLandlord($request, $unit);
+            }
+
             return $request;
         });
+    }
+
+    /** Telegram alert to the landlord about a tenant's new repair (if they linked the bot). */
+    public function alertLandlord(MaintenanceRequest $request, Unit $unit): void
+    {
+        $landlord = User::query()->find($unit->landlord_id);
+        if (! $landlord) {
+            return;
+        }
+
+        $this->sms->toLandlord($landlord, SmsMessage::KIND_NEW_REPAIR, __('telegram.new_repair', [
+            'unit' => $unit->label,
+            'title' => mb_strimwidth($request->title, 0, 60, '…'),
+            'app' => config('app.name'),
+        ], $landlord->locale ?: 'am'), $request);
     }
 
     /** Moves a request along open → in progress → done, optionally texting the tenant. */
@@ -68,7 +88,7 @@ class RepairService
                 'app' => config('app.name'),
             ], $locale);
 
-            $this->sms->queue($request->landlord_id, $request->tenant->phone, SmsMessage::KIND_REPAIR_UPDATE, $body, $request);
+            $this->sms->toTenant($request->tenant, SmsMessage::KIND_REPAIR_UPDATE, $body, $request);
         }
 
         return $request;

@@ -30,6 +30,9 @@
 <body>
 <div class="wrap">
     @include('receipts._body', ['r' => $r])
+    @if (config('telegram.username'))
+        <a class="lang" href="https://t.me/{{ config('telegram.username') }}?start=tenant">{{ __('payments.telegram_cta', [], $r['locale']) }}</a>
+    @endif
     <a class="lang" href="{{ route('privacy') }}">{{ __('privacy.title', [], $r['locale']) }}</a>
     <a class="lang" href="?lang={{ $r['locale'] === 'am' ? 'en' : 'am' }}">{{ $r['locale'] === 'am' ? 'English' : 'አማርኛ' }}</a>
 </div>
