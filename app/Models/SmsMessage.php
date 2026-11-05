@@ -7,7 +7,13 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class SmsMessage extends Model
 {
+    public const CHANNEL_SMS = 'sms';
+
+    public const CHANNEL_TELEGRAM = 'telegram';
+
     public const KIND_RECEIPT = 'receipt';
+
+    public const KIND_NEW_REPAIR = 'new_repair';
 
     public const KIND_REMINDER_BEFORE = 'reminder_before';
 
@@ -17,7 +23,7 @@ class SmsMessage extends Model
 
     public const KIND_REPAIR_LINK = 'repair_link';
 
-    protected $fillable = ['landlord_id', 'to', 'kind', 'related_type', 'related_id', 'body', 'segments', 'status', 'error', 'sent_at'];
+    protected $fillable = ['landlord_id', 'to', 'channel', 'kind', 'related_type', 'related_id', 'body', 'segments', 'status', 'error', 'sent_at'];
 
     protected function casts(): array
     {

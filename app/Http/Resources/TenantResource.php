@@ -19,6 +19,9 @@ class TenantResource extends JsonResource
             'id_number' => $this->when($request->routeIs('tenants.show'), fn () => $this->id_number),
             'has_id_number' => filled($this->id_number),
             'address' => $this->address,
+            'telegram_linked' => $this->relationLoaded('telegramLink')
+                ? $this->telegramLink !== null
+                : $this->telegramLink()->exists(),
             'created_at' => $this->created_at,
         ];
     }

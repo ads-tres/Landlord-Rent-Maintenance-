@@ -19,6 +19,8 @@ class UserResource extends JsonResource
             'calendar_pref' => $this->calendar_pref,
             'sms_reminders' => (bool) $this->sms_reminders,
             'role' => $this->role,
+            'telegram_linked' => $this->telegramLink()->exists(),
+            'telegram_available' => filled(config('telegram.token')) && filled(config('telegram.username')),
         ];
     }
 }

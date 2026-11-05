@@ -11,14 +11,24 @@ use App\Http\Controllers\Api\V1\PropertyController;
 use App\Http\Controllers\Api\V1\RepairLinkController;
 use App\Http\Controllers\Api\V1\ReportController;
 use App\Http\Controllers\Api\V1\RulesController;
+use App\Http\Controllers\Api\V1\SignedAttachmentController;
+use App\Http\Controllers\Api\V1\TelegramLinkController;
 use App\Http\Controllers\Api\V1\TenantController;
 use App\Http\Controllers\Api\V1\TenantPrivacyController;
 use App\Http\Controllers\Api\V1\UnitController;
 use App\Http\Controllers\Api\V1\UnitListController;
+use App\Http\Controllers\TelegramWebhookController;
 use App\Http\Middleware\RecordLandlordActivity;
 use Illuminate\Support\Facades\Route;
 
+// Telegram bot updates (checked with the webhook secret header).
+Route::post('telegram/webhook', TelegramWebhookController::class)->middleware('throttle:120,1')->name('telegram.webhook');
+
 Route::prefix('v1')->group(function () {
+    Route::get('attachments/{attachment}/signed', SignedAttachmentController::class)
+        ->middleware('signed')
+        ->name('attachments.signed');
+
     Route::post('auth/otp', [AuthController::class, 'sendOtp'])->middleware('throttle:otp');
     Route::post('auth/verify', [AuthController::class, 'verify'])->middleware('throttle:10,1');
 
@@ -52,5 +62,8 @@ Route::prefix('v1')->group(function () {
         Route::get('attachments/{attachment}', [AttachmentController::class, 'show']);
         Route::post('leases/{lease}/repair-link/send', [RepairLinkController::class, 'send']);
         Route::post('leases/{lease}/repair-link/reset', [RepairLinkController::class, 'reset']);
+
+        Route::post('telegram/link', [TelegramLinkController::class, 'store']);
+        Route::delete('telegram/link', [TelegramLinkController::class, 'destroy']);
     });
 });

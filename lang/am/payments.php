@@ -9,6 +9,7 @@ return [
         'bank' => 'በባንክ ማስተላለፍ',
         'chapa' => 'ቻፓ',
     ],
+    'telegram_cta' => 'ደረሰኞችንና የጥገና መረጃዎችን በቴሌግራም ያግኙ (በነጻ)',
     'receipt' => [
         'title' => 'የኪራይ ደረሰኝ',
         'received_from' => 'ከ:name የተቀበለ',

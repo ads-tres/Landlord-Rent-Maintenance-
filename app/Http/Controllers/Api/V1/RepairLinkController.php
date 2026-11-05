@@ -28,7 +28,7 @@ class RepairLinkController extends Controller
             'app' => config('app.name'),
         ], $locale);
 
-        $message = $sms->queue($lease->landlord_id, $lease->tenant->phone, SmsMessage::KIND_REPAIR_LINK, $body, $lease);
+        $message = $sms->toTenant($lease->tenant, SmsMessage::KIND_REPAIR_LINK, $body, $lease);
 
         return response()->json(['data' => ['status' => $message->fresh()->status, 'repair_url' => $lease->repairUrl()]]);
     }

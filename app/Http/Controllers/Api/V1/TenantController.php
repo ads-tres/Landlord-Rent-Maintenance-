@@ -20,6 +20,7 @@ class TenantController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         $tenants = Tenant::query()
+            ->with('telegramLink')
             ->when($request->string('q')->trim()->value(), function ($query, string $q) {
                 $query->where(fn ($w) => $w->where('full_name', 'like', "%{$q}%")->orWhere('phone', 'like', "%{$q}%"));
             })

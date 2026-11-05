@@ -44,6 +44,7 @@ Tenant web pages ──────┘          │
 | Repairs: tenant link with photo, status updates by SMS, private photos | ✅ |
 | Quarterly income report (JSON + PDF), Ethiopian calendar, privacy tools, backups, offline-safe payments | ✅ |
 | Pilot tools: admin panel, notebook import, pilot metrics, deployment kit | ✅ |
+| Telegram bot: free messages with SMS fallback, repairs by photo or voice note, landlord alerts | ✅ |
 | Pilot with 10 landlords | ⏳ next |
 
 ## API (v1)
@@ -157,6 +158,24 @@ Phone numbers are accepted as `09…`, `07…`, `2519…` or `+2519…` and stor
   in Gregorian or Ethiopian with `EC`), upload, check the preview, then confirm. It creates properties,
   units, tenants, leases and charges, plus an opening payment for `paid_through`.
 - **Settings:** the yearly rent cap.
+
+## Telegram bot
+
+Optional and free: when someone has linked the bot, their messages go to Telegram instead of SMS.
+
+- **Setup:** create a bot with @BotFather, then set `TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME` and a random
+  `TELEGRAM_WEBHOOK_SECRET`.
+  - On the server (HTTPS), run `php artisan telegram:set-webhook`.
+  - Locally, before there's a server, run `php artisan telegram:poll`; the bot works through long polling.
+- **Landlords:** the app's Settings → Connect Telegram calls `POST /api/v1/telegram/link`, which returns a
+  one-time `t.me/<bot>?start=<code>` link. Linked landlords get an alert for each new tenant repair.
+- **Tenants:** `/start` → share their own contact (it must be theirs) → the bot matches tenant records by phone,
+  across landlords → they agree to a short notice (messages pass through Telegram's servers outside Ethiopia;
+  names and ID numbers are kept out of the text) → receipts, reminders, repair updates and the repair link go
+  to Telegram. `/repair` takes text, a photo or a voice note and creates a repair (voice notes are played
+  through a 30-minute signed link). `/stop` goes back to SMS. Receipt and repair pages link to the bot.
+- If the bot is blocked, the message goes by SMS and Telegram is switched off for that chat. Every message is
+  logged in `sms_messages` with its `channel`.
 
 ## Deployment
 

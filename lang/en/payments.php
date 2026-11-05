@@ -9,6 +9,7 @@ return [
         'bank' => 'Bank transfer',
         'chapa' => 'Chapa',
     ],
+    'telegram_cta' => 'Get receipts and repair updates on Telegram (free)',
     'receipt' => [
         'title' => 'Rent receipt',
         'received_from' => 'Received from :name',

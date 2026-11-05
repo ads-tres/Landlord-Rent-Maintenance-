@@ -6,6 +6,7 @@ use App\Models\Concerns\BelongsToLandlord;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class Tenant extends Model
 {
@@ -34,5 +35,10 @@ class Tenant extends Model
     public function consents(): HasMany
     {
         return $this->hasMany(Consent::class);
+    }
+
+    public function telegramLink(): MorphOne
+    {
+        return $this->morphOne(TelegramLink::class, 'linkable')->whereNotNull('consented_at');
     }
 }

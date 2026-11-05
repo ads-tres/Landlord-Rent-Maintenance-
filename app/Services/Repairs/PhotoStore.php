@@ -21,11 +21,35 @@ class PhotoStore
 
     public function store(UploadedFile $file, Model $owner, int $landlordId): Attachment
     {
-        $path = sprintf('attachments/%d/%s/%s.jpg', $landlordId, now()->format('Y/m'), Str::uuid());
+        return $this->save($this->shrink($file->getRealPath()), 'image/jpeg', 'jpg', $owner, $landlordId);
+    }
 
-        Storage::disk(Attachment::DISK)->put($path, $this->shrink($file->getRealPath()));
+    /** A photo received as raw bytes (e.g. from Telegram). */
+    public function storeBytes(string $bytes, Model $owner, int $landlordId): Attachment
+    {
+        $tmp = tempnam(sys_get_temp_dir(), 'photo');
+        file_put_contents($tmp, $bytes);
 
-        $attachment = new Attachment(['path' => $path, 'mime' => 'image/jpeg']);
+        try {
+            return $this->save($this->shrink($tmp), 'image/jpeg', 'jpg', $owner, $landlordId);
+        } finally {
+            @unlink($tmp);
+        }
+    }
+
+    /** A voice note (Telegram sends OGG/Opus), stored as is. */
+    public function storeVoice(string $bytes, Model $owner, int $landlordId): Attachment
+    {
+        return $this->save($bytes, 'audio/ogg', 'ogg', $owner, $landlordId);
+    }
+
+    private function save(string $contents, string $mime, string $extension, Model $owner, int $landlordId): Attachment
+    {
+        $path = sprintf('attachments/%d/%s/%s.%s', $landlordId, now()->format('Y/m'), Str::uuid(), $extension);
+
+        Storage::disk(Attachment::DISK)->put($path, $contents);
+
+        $attachment = new Attachment(['path' => $path, 'mime' => $mime]);
         $attachment->landlord_id = $landlordId;
         $attachment->attachable()->associate($owner);
         $attachment->save();
