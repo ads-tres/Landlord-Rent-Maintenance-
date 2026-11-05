@@ -4,7 +4,7 @@ namespace App\Services\Payments;
 
 use App\Models\Charge;
 use App\Models\Payment;
-use Carbon\CarbonImmutable;
+use App\Support\DateDisplay;
 
 /** Everything a receipt shows, shared by the tenant web page, the PDF and the SMS. */
 class ReceiptData
@@ -15,6 +15,7 @@ class ReceiptData
     public static function for(Payment $payment, string $locale): array
     {
         $payment->loadMissing(['landlord', 'tenant', 'lease.unit.property', 'allocations.charge']);
+        $calendar = $payment->landlord->calendar_pref ?? DateDisplay::GREGORIAN;
         $lease = $payment->lease;
 
         $outstanding = $lease
@@ -33,14 +34,14 @@ class ReceiptData
             'tenant_name' => $payment->tenant->full_name,
             'unit' => $lease?->unit?->label,
             'property' => $lease?->unit?->property?->name,
-            'paid_at' => self::date($payment->paid_at, $locale),
+            'paid_at' => self::date($payment->paid_at, $locale, $calendar),
             'amount' => self::birr($payment->amount, $locale),
             'method' => __('payments.methods.'.$payment->method, [], $locale),
             'reference' => $payment->reference,
             'lines' => $payment->allocations
                 ->sortBy(fn ($a) => $a->charge->period)
                 ->map(fn ($a) => [
-                    'label' => self::period($a->charge->period, $locale),
+                    'label' => self::period($a->charge->period, $locale, $calendar),
                     'amount' => self::birr($a->amount, $locale),
                     'full' => $a->charge->status === Charge::STATUS_PAID,
                 ])->values()->all(),
@@ -57,13 +58,13 @@ class ReceiptData
         return $prefix.' '.number_format($santim / 100, $decimals);
     }
 
-    public static function period(string $period, string $locale): string
+    public static function period(string $period, string $locale, string $calendar = DateDisplay::GREGORIAN): string
     {
-        return CarbonImmutable::createFromFormat('!Y-m', $period)->locale($locale)->isoFormat('MMMM YYYY');
+        return DateDisplay::period($period, $locale, $calendar);
     }
 
-    public static function date($date, string $locale): string
+    public static function date($date, string $locale, string $calendar = DateDisplay::GREGORIAN): string
     {
-        return CarbonImmutable::parse($date)->locale($locale)->isoFormat('D MMMM YYYY');
+        return DateDisplay::date($date, $locale, $calendar);
     }
 }

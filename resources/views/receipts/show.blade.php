@@ -30,6 +30,7 @@
 <body>
 <div class="wrap">
     @include('receipts._body', ['r' => $r])
+    <a class="lang" href="{{ route('privacy') }}">{{ __('privacy.title', [], $r['locale']) }}</a>
     <a class="lang" href="?lang={{ $r['locale'] === 'am' ? 'en' : 'am' }}">{{ $r['locale'] === 'am' ? 'English' : 'አማርኛ' }}</a>
 </div>
 </body>

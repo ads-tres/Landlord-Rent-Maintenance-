@@ -9,8 +9,10 @@ use App\Http\Controllers\Api\V1\MaintenanceController;
 use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\Api\V1\PropertyController;
 use App\Http\Controllers\Api\V1\RepairLinkController;
+use App\Http\Controllers\Api\V1\ReportController;
 use App\Http\Controllers\Api\V1\RulesController;
 use App\Http\Controllers\Api\V1\TenantController;
+use App\Http\Controllers\Api\V1\TenantPrivacyController;
 use App\Http\Controllers\Api\V1\UnitController;
 use App\Http\Controllers\Api\V1\UnitListController;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +30,8 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('properties.units', UnitController::class)->shallow();
         Route::get('units', UnitListController::class);
         Route::apiResource('tenants', TenantController::class);
+        Route::get('tenants/{tenant}/export', [TenantPrivacyController::class, 'export']);
+        Route::post('tenants/{tenant}/anonymize', [TenantPrivacyController::class, 'anonymize']);
 
         Route::apiResource('leases', LeaseController::class)->except('destroy');
         Route::post('leases/{lease}/end', [LeaseController::class, 'end']);
@@ -40,6 +44,7 @@ Route::prefix('v1')->group(function () {
         Route::get('payments/{payment}/receipt', [PaymentController::class, 'receipt']);
 
         Route::get('dashboard', DashboardController::class);
+        Route::get('reports/quarterly', [ReportController::class, 'quarterly']);
 
         Route::apiResource('maintenance', MaintenanceController::class)->except('destroy');
         Route::post('maintenance/{maintenance}/photos', [MaintenanceController::class, 'addPhoto']);

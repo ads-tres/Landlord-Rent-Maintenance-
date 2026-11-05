@@ -74,6 +74,9 @@ class TenantController extends Controller
             __('api.tenant_has_active_lease'),
         );
 
+        // Payments are income records the landlord needs for tax; remove personal details instead.
+        abort_if($tenant->payments()->exists(), Response::HTTP_CONFLICT, __('api.tenant_has_payments'));
+
         $tenant->delete();
 
         return response()->noContent();

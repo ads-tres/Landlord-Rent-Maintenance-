@@ -27,7 +27,7 @@ class PaymentTest extends TestCase
         parent::setUp();
 
         $this->travelTo('2026-11-15 10:00');
-        $this->landlord = $this->actingAsLandlord(User::factory()->create(['name' => 'Abel', 'locale' => 'en']));
+        $this->landlord = $this->actingAsLandlord(User::factory()->create(['name' => 'Abel', 'locale' => 'en', 'calendar_pref' => 'gregorian']));
         $property = Property::factory()->for($this->landlord, 'landlord')->create(['name' => 'Bole Compound']);
         $unit = Unit::factory()->for($property)->create(['landlord_id' => $this->landlord->id, 'label' => 'Room 3', 'status' => 'occupied']);
 
@@ -137,6 +137,16 @@ class PaymentTest extends TestCase
         $this->assertStringContainsString($response->json('data.receipt_url'), $sms['message']);
 
         $this->assertDatabaseHas('sms_messages', ['kind' => 'receipt', 'status' => 'sent', 'landlord_id' => $this->landlord->id]);
+    }
+
+    public function test_sms_and_receipt_follow_the_ethiopian_calendar(): void
+    {
+        $this->landlord->update(['calendar_pref' => 'ethiopian']);
+
+        $url = $this->pay(['amount' => 2_000_000])->json('data.receipt_url');
+
+        $this->assertStringContainsString('(Nehase 2018–Tikimt 2019)', $this->sms->sent[0]['message']);
+        $this->get($url.'?lang=am')->assertSee('6 ኅዳር 2019')->assertSee('መስከረም–ጥቅምት 2019', false);
     }
 
     public function test_sms_can_be_skipped(): void

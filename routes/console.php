@@ -16,3 +16,6 @@ Schedule::command('rent:mark-late')->dailyAt('00:30')->withoutOverlapping()->onO
 
 // SMS reminders to tenants: 3 days before and on the due date (after the morning rush).
 Schedule::command('rent:send-reminders')->dailyAt('10:05')->withoutOverlapping()->onOneServer();
+
+// Database backup, kept 14 days in storage/app/private/backups (copy offsite, inside Ethiopia).
+Schedule::command('backup:database')->dailyAt('02:10')->withoutOverlapping()->onOneServer();
