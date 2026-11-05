@@ -15,6 +15,10 @@ class SmsMessage extends Model
 
     public const KIND_NEW_REPAIR = 'new_repair';
 
+    public const KIND_UTILITY_BILL = 'utility_bill';
+
+    public const KIND_ANNOUNCEMENT = 'announcement';
+
     public const KIND_REMINDER_BEFORE = 'reminder_before';
 
     public const KIND_REMINDER_DUE = 'reminder_due';

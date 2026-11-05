@@ -44,11 +44,12 @@ class PaymentRecorder
 
             $remaining = (int) $data['amount'];
 
-            // 1. Unpaid and part-paid months, oldest first.
+            // 1. Unpaid and part-paid charges (rent and utility shares), oldest due first.
             $open = $lease->charges()
-                ->where('type', 'rent')
                 ->where('status', '!=', Charge::STATUS_PAID)
+                ->orderBy('due_date')
                 ->orderBy('period')
+                ->orderBy('id')
                 ->lockForUpdate()
                 ->get();
 
@@ -111,7 +112,6 @@ class PaymentRecorder
     public function maxPayable(Lease $lease): int
     {
         $open = $lease->charges()
-            ->where('type', 'rent')
             ->where('status', '!=', Charge::STATUS_PAID)
             ->withSum('allocations as paid', 'amount')
             ->get()

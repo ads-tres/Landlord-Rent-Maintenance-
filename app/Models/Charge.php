@@ -20,9 +20,9 @@ class Charge extends Model
 
     public const STATUS_LATE = 'late';
 
-    protected $fillable = ['lease_id', 'period', 'type', 'amount_due', 'due_date', 'status'];
+    protected $fillable = ['lease_id', 'period', 'type', 'source_key', 'utility_bill_id', 'amount_due', 'due_date', 'status'];
 
-    protected $attributes = ['type' => 'rent', 'status' => self::STATUS_DUE];
+    protected $attributes = ['type' => 'rent', 'source_key' => 'rent', 'status' => self::STATUS_DUE];
 
     protected function casts(): array
     {
@@ -54,6 +54,11 @@ class Charge extends Model
             default => self::STATUS_DUE,
         };
         $this->save();
+    }
+
+    public function utilityBill(): BelongsTo
+    {
+        return $this->belongsTo(UtilityBill::class);
     }
 
     public function allocations(): HasMany

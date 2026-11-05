@@ -19,6 +19,21 @@ class Property extends Model
         return $this->hasMany(Unit::class);
     }
 
+    public function meters(): HasMany
+    {
+        return $this->hasMany(Meter::class);
+    }
+
+    public function assets(): HasMany
+    {
+        return $this->hasMany(Asset::class);
+    }
+
+    public function announcements(): HasMany
+    {
+        return $this->hasMany(Announcement::class);
+    }
+
     public function vacantUnits(): HasMany
     {
         return $this->units()->where('status', Unit::STATUS_VACANT);

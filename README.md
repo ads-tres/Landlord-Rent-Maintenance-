@@ -45,6 +45,7 @@ Tenant web pages ──────┘          │
 | Quarterly income report (JSON + PDF), Ethiopian calendar, privacy tools, backups, offline-safe payments | ✅ |
 | Pilot tools: admin panel, notebook import, pilot metrics, deployment kit | ✅ |
 | Telegram bot: free messages with SMS fallback, repairs by photo or voice note, landlord alerts | ✅ |
+| Compound: shared meter bills, announcements, generator/tank/pump service reminders | ✅ |
 | Pilot with 10 landlords | ⏳ next |
 
 ## API (v1)
@@ -84,6 +85,15 @@ to localize messages.
 | GET | `/reports/quarterly` | `?year=&quarter=&calendar=ethiopian\|gregorian&format=pdf`. Defaults to the current quarter in the landlord's calendar |
 | GET | `/tenants/{id}/export` | Tenant's data as JSON (right of access) |
 | POST | `/tenants/{id}/anonymize` | Removes name, phone, ID and address, and deletes repair photos. Payments stay. Not allowed with an active lease |
+| GET / POST | `/properties/{id}/meters` | Shared meter: `{name, kind: electricity\|water, split_method: equal\|percent\|submeter, units: [{unit_id, share_percent?}]}`. Percentages must add up to 100 |
+| GET / PATCH / DELETE | `/meters/{id}` | |
+| GET / POST | `/meters/{id}/bills` | `{period, amount, due_date, readings?: {unit_id: {previous, current}}, photo?, notify_tenants?, dry_run?}`. Creates a utility charge per occupied unit; the vacant units' share goes to `landlord_share` |
+| DELETE | `/bills/{id}` | Only if nothing was paid towards it |
+| GET / POST | `/properties/{id}/announcements` (+ `/preview`) | One message to all current tenants. The preview gives Telegram vs SMS counts, SMS segments and cost (`SMS_PRICE_PER_SEGMENT_SANTIM`) |
+| GET | `/assets?due_within_days=` | Equipment across properties |
+| GET / POST | `/properties/{id}/assets` | `{kind: generator\|water_tank\|pump\|other, name, service_interval_days, last_serviced_on?}` |
+| PATCH / DELETE | `/assets/{id}` | |
+| POST | `/assets/{id}/services` | `{serviced_on, cost?, notes?}`. The next service is due one interval later |
 | GET | `/rules` | `{rent_cap_percent, min_lease_years}` for checks in the app |
 
 **Amounts are integers in santim** (Br 150.00 = `15000`).
@@ -158,6 +168,21 @@ Phone numbers are accepted as `09…`, `07…`, `2519…` or `+2519…` and stor
   in Gregorian or Ethiopian with `EC`), upload, check the preview, then confirm. It creates properties,
   units, tenants, leases and charges, plus an opening payment for `paid_through`.
 - **Settings:** the yearly rent cap.
+
+## Compound features
+
+- **Shared meters:** a bill splits across the meter's units by equal shares, fixed percentages or sub-meter
+  readings. Largest-remainder rounding makes the parts add up exactly. A vacant unit's share is the
+  landlord's, not spread onto tenants.
+  - Each occupied unit gets a `utility` charge (`source_key = bill:{id}`). Charges are now unique per
+    lease, period and source, so rent and several utility bills can share a month.
+  - Payments cover rent and utility charges, oldest due date first. Receipts show "Electricity · November 2026".
+  - Tenants are told their share (Telegram or SMS). Rent reminders still cover rent only.
+- **Announcements:** one message to every tenant with an active lease in a property. The preview shows how
+  many go free on Telegram, how many SMS, and the cost if `SMS_PRICE_PER_SEGMENT_SANTIM` is set.
+- **Equipment:** generators, water tanks and pumps with a service interval and a service log.
+  `assets:remind` (daily 08:10) tells landlords on Telegram about services due within 3 days, at most
+  weekly per item, and the dashboard shows `services_due`.
 
 ## Telegram bot
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Asset;
 use App\Models\Charge;
 use App\Models\Lease;
 use App\Models\MaintenanceRequest;
@@ -36,6 +37,7 @@ class DashboardController extends Controller
             'late_amount' => (int) $late->sum(fn (Charge $c) => $c->amount_due - (int) $c->paid),
             'open_repairs' => MaintenanceRequest::query()->where('status', '!=', 'done')->count(),
             'leases_ending_soon' => Lease::query()->endingWithin(60)->count(),
+            'services_due' => Asset::query()->get()->filter(fn (Asset $a) => $a->isDueWithin(7))->count(),
             'properties' => Property::query()->count(),
             'units' => Unit::query()->count(),
             'vacant_units' => Unit::query()->where('status', Unit::STATUS_VACANT)->count(),

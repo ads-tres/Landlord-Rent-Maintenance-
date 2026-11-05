@@ -22,6 +22,7 @@ class ChargeResource extends JsonResource
             'lease_id' => $this->lease_id,
             'period' => $this->period,
             'type' => $this->type,
+            'utility_kind' => $this->when($this->type === 'utility', fn () => $this->utilityBill?->meter?->kind),
             'amount_due' => $this->amount_due,
             'amount_paid' => $paid,
             'balance' => max($this->amount_due - $paid, 0),
