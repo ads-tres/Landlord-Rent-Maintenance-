@@ -99,12 +99,15 @@ class RentSchedule
     /** Creates the rent charge for one period (used for advance payments too). */
     public function createCharge(Lease $lease, string $period): Charge
     {
+        $dueDate = $this->dueDate($lease, $period);
+
+        // A month already past its due date (a lease entered after it started) is late right away.
         $charge = new Charge([
             'period' => $period,
             'type' => 'rent',
             'amount_due' => $this->rentFor($lease, $period),
-            'due_date' => $this->dueDate($lease, $period),
-            'status' => Charge::STATUS_DUE,
+            'due_date' => $dueDate,
+            'status' => $dueDate->lt(today()) ? Charge::STATUS_LATE : Charge::STATUS_DUE,
         ]);
         $charge->landlord_id = $lease->landlord_id;
         $charge->lease()->associate($lease);

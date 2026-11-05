@@ -36,8 +36,8 @@ class RentJobsTest extends TestCase
         $lease = Lease::factory()->create(['start_date' => '2026-10-05', 'end_date' => '2028-10-04', 'due_day' => 5]);
         $this->artisan('rent:generate-charges');
 
-        // November is due today, so not late yet; October is.
-        $this->artisan('rent:mark-late')->expectsOutput('Marked 1 charge(s) late.');
+        // October was already past due when created, so it starts late; November is due today.
+        $this->artisan('rent:mark-late')->expectsOutput('Marked 0 charge(s) late.');
 
         $this->assertSame('late', Charge::query()->where('period', '2026-10')->value('status'));
         $this->assertSame('due', Charge::query()->where('period', '2026-11')->value('status'));

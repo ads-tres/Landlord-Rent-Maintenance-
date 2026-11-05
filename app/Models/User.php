@@ -16,13 +16,17 @@ class User extends Authenticatable
 
     public const ROLE_LANDLORD = 'landlord';
 
-    protected $fillable = ['phone', 'name', 'email', 'locale', 'calendar_pref', 'sms_reminders', 'role', 'phone_verified_at'];
+    /** Runs the pilot: admin panel only, never sees the landlord API data of others. */
+    public const ROLE_ADMIN = 'admin';
+
+    protected $fillable = ['phone', 'name', 'email', 'locale', 'calendar_pref', 'sms_reminders', 'role', 'is_pilot', 'phone_verified_at'];
 
     protected function casts(): array
     {
         return [
             'phone_verified_at' => 'datetime',
             'sms_reminders' => 'boolean',
+            'is_pilot' => 'boolean',
         ];
     }
 
@@ -33,6 +37,11 @@ class User extends Authenticatable
     public function landlordId(): int
     {
         return $this->id;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === self::ROLE_ADMIN;
     }
 
     public function properties(): HasMany
