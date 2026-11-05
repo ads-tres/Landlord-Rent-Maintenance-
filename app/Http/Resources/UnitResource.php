@@ -17,6 +17,12 @@ class UnitResource extends JsonResource
             'label' => $this->label,
             'bedrooms' => $this->bedrooms,
             'status' => $this->status,
+            'active_lease' => $this->whenLoaded('activeLease', fn () => $this->activeLease ? [
+                'id' => $this->activeLease->id,
+                'monthly_rent' => $this->activeLease->monthly_rent,
+                'end_date' => $this->activeLease->end_date->toDateString(),
+                'tenant_name' => $this->activeLease->tenant?->full_name,
+            ] : null),
             'created_at' => $this->created_at,
         ];
     }

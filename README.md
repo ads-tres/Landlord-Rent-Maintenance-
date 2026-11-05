@@ -38,9 +38,9 @@ Tenant web pages ──────┘          │
 | Landing page + waitlist (Amharic/English, 3 survey questions, honeypot, rate-limited) | ✅ |
 | Phone login with SMS one-time code (hashed, 5-minute expiry, 5 attempts, rate-limited) | ✅ |
 | Properties, units, tenants CRUD | ✅ |
-| Full v1 database schema (leases, charges, payments, allocations, repairs, attachments…) | ✅ schema only |
-| Leases, rent schedule, rent-cap check, scheduled jobs | ⏳ next |
-| Payment logging, receipts (PDF + SMS) | ⏳ |
+| Full v1 database schema (leases, charges, payments, allocations, repairs, attachments…) | ✅ |
+| Leases (directive fields, 2-year minimum), rent schedule, rent-cap check, late flags | ✅ |
+| Payment logging, receipts (PDF + SMS), rent reminders | ⏳ next |
 | Repairs with tenant link and photos | ⏳ |
 | Quarterly report, dashboard, Ethiopian calendar | ⏳ |
 
@@ -62,8 +62,26 @@ to localize messages.
 | GET / POST | `/tenants` | `?q=` search; create requires `privacy_notice_shown: true` |
 | GET / PATCH / DELETE | `/tenants/{id}` | `id_number` only shown on the detail view |
 
+| GET / POST | `/leases` | `?status=&unit_id=&tenant_id=&ending_within_days=`. Create checks the 2-year minimum, marks the unit occupied and generates charges up to this month |
+| GET / PATCH | `/leases/{id}` | Includes balance, rent changes and a `directive_check` of missing lease fields. PATCH edits only `condition_notes` and `registered_at` |
+| POST | `/leases/{id}/end` | `{ended_on}`. Frees the unit and removes unpaid charges for later months |
+| POST | `/leases/{id}/rent-change` | `{new_rent, effective_date}`. Refused above the yearly cap; reprices unpaid charges from that month |
+| GET | `/charges` | `?period=YYYY-MM&status=due\|partial\|paid\|late\|unpaid&lease_id=` |
+| GET | `/rules` | `{rent_cap_percent, min_lease_years}` for checks in the app |
+
+**Amounts are integers in santim** (Br 150.00 = `15000`).
+
 Phone numbers are accepted as `09…`, `07…`, `2519…` or `+2519…` and stored in E.164 form
 (`+2519XXXXXXXX`).
+
+## Rent schedule
+
+- One charge per month of the lease term: a lease from 2026-11-05 to 2028-11-04 has 24 charges.
+- Each charge is due on the lease's `due_day` (which defaults to the start day), clamped to the month's length.
+- Rent changes apply from their effective month. The cap (`settings.rent_cap_percent`) is stored with each change.
+- Scheduled jobs (`routes/console.php`): `rent:generate-charges` (daily 00:15) and `rent:mark-late` (daily 00:30).
+  On the server, run `php artisan schedule:run` every minute from cron.
+- Periods follow the Gregorian calendar for now. Ethiopian-calendar due dates come with the calendar feature.
 
 ## Local setup
 

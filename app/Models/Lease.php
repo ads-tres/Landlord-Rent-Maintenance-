@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\BelongsToLandlord;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -18,11 +19,8 @@ class Lease extends Model
 
     public const STATUS_ENDED = 'ended';
 
-    /** Addis directive 7/2024: leases run at least two years. */
-    public const MIN_TERM_YEARS = 2;
-
     protected $fillable = [
-        'unit_id', 'tenant_id', 'start_date', 'end_date', 'monthly_rent', 'deposit',
+        'unit_id', 'tenant_id', 'start_date', 'end_date', 'terminated_on', 'monthly_rent', 'deposit',
         'due_day', 'due_calendar', 'condition_notes', 'registered_at', 'status',
     ];
 
@@ -38,11 +36,23 @@ class Lease extends Model
         return [
             'start_date' => 'date',
             'end_date' => 'date',
+            'terminated_on' => 'date',
             'registered_at' => 'datetime',
             'monthly_rent' => 'integer',
             'deposit' => 'integer',
             'due_day' => 'integer',
         ];
+    }
+
+    public function scopeActive(Builder $query): void
+    {
+        $query->where('status', self::STATUS_ACTIVE);
+    }
+
+    /** Active leases whose end date falls within the next $days days. */
+    public function scopeEndingWithin(Builder $query, int $days): void
+    {
+        $query->active()->whereBetween('end_date', [today(), today()->addDays($days)]);
     }
 
     public function unit(): BelongsTo
