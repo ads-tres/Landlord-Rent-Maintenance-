@@ -17,7 +17,7 @@ class Expense extends Model
         'repair', 'maintenance', 'land_lease', 'utility', 'tax', 'insurance', 'security_cleaning', 'other',
     ];
 
-    protected $fillable = ['property_id', 'unit_id', 'category', 'amount', 'spent_on', 'description', 'vendor', 'source_type', 'source_id'];
+    protected $fillable = ['property_id', 'unit_id', 'category', 'amount', 'spent_on', 'description', 'vendor', 'source_type', 'source_id', 'client_ref'];
 
     protected function casts(): array
     {

@@ -15,6 +15,7 @@ class StoreMaintenanceRequest extends FormRequest
             'title' => ['required', 'string', 'max:120'],
             'category' => ['sometimes', Rule::in(MaintenanceRequest::CATEGORIES)],
             'description' => ['nullable', 'string', 'max:2000'],
+            'client_ref' => ['sometimes', 'nullable', 'string', 'max:64'],
             'photos' => ['sometimes', 'array', 'max:4'],
             'photos.*' => ['image', 'mimes:jpeg,jpg,png,webp,heic', 'max:8192'],
         ];

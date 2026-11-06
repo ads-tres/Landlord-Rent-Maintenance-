@@ -8,6 +8,7 @@ use App\Models\Expense;
 use App\Models\Property;
 use App\Models\Unit;
 use App\Services\Repairs\PhotoStore;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
@@ -45,8 +46,13 @@ class ExpenseController extends Controller
     }
 
     /** POST /expenses — multipart when a receipt photo is attached. */
-    public function store(Request $request, PhotoStore $photos): ExpenseResource
+    public function store(Request $request, PhotoStore $photos): ExpenseResource|JsonResponse
     {
+        // An expense logged offline and sent again: return the one already saved.
+        if ($existing = $this->alreadySaved(Expense::class, $request)) {
+            return (new ExpenseResource($this->loadDetail($existing)))->response()->setStatusCode(200);
+        }
+
         $data = $this->validated($request, true);
         $property = Property::query()->findOrFail($data['property_id']);
         Gate::authorize('update', $property);
@@ -123,6 +129,7 @@ class ExpenseController extends Controller
             'spent_on' => [$req, 'date_format:Y-m-d', 'before_or_equal:today'],
             'description' => ['sometimes', 'nullable', 'string', 'max:250'],
             'vendor' => ['sometimes', 'nullable', 'string', 'max:120'],
+            'client_ref' => ['sometimes', 'nullable', 'string', 'max:64'],
             'photo' => ['sometimes', 'image', 'mimes:jpeg,jpg,png,webp,heic', 'max:8192'],
         ]);
     }
