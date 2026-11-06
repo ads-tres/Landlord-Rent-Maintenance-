@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Asset;
 use App\Models\Charge;
+use App\Models\Expense;
 use App\Models\Lease;
 use App\Models\MaintenanceRequest;
 use App\Models\Payment;
@@ -30,6 +31,9 @@ class DashboardController extends Controller
             'month' => now()->format('Y-m'),
             'collected_this_month' => (int) Payment::query()
                 ->whereBetween('paid_at', [now()->startOfMonth()->toDateString(), now()->endOfMonth()->toDateString()])
+                ->sum('amount'),
+            'expenses_this_month' => (int) Expense::query()
+                ->whereBetween('spent_on', [now()->startOfMonth()->toDateString(), now()->endOfMonth()->toDateString()])
                 ->sum('amount'),
             'due_this_month' => (int) Charge::query()->where('period', now()->format('Y-m'))->sum('amount_due'),
             'outstanding' => (int) $unpaid->sum(fn (Charge $c) => $c->amount_due - (int) $c->paid),

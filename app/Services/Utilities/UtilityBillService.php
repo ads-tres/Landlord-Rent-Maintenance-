@@ -3,10 +3,12 @@
 namespace App\Services\Utilities;
 
 use App\Models\Charge;
+use App\Models\Expense;
 use App\Models\Meter;
 use App\Models\MeterReading;
 use App\Models\SmsMessage;
 use App\Models\UtilityBill;
+use App\Services\Expenses\ExpenseRecorder;
 use App\Services\Payments\ReceiptData;
 use App\Services\Repairs\PhotoStore;
 use App\Services\Sms\SmsNotifier;
@@ -74,6 +76,9 @@ class UtilityBillService
                 $this->photos->store($photo, $bill, $meter->landlord_id);
             }
 
+            // The vacant units' share is the landlord's cost.
+            app(ExpenseRecorder::class)->fromUtilityBill($bill);
+
             return $bill;
         });
 
@@ -92,6 +97,7 @@ class UtilityBillService
         }
 
         DB::transaction(function () use ($bill) {
+            Expense::query()->withoutGlobalScopes()->where('source_type', $bill->getMorphClass())->where('source_id', $bill->id)->delete();
             $bill->charges()->delete();
             $bill->delete();
         });

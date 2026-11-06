@@ -20,6 +20,7 @@ class MaintenanceRequestResource extends JsonResource
             'category' => $this->category,
             'description' => $this->description,
             'resolution_note' => $this->resolution_note,
+            'cost' => $this->cost,
             'status' => $this->status,
             'source' => $this->source,
             'opened_at' => $this->opened_at,

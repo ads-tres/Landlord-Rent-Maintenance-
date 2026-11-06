@@ -17,6 +17,7 @@ class UpdateMaintenanceRequest extends FormRequest
             'description' => ['sometimes', 'nullable', 'string', 'max:2000'],
             'note' => ['sometimes', 'nullable', 'string', 'max:500'],
             'notify_tenant' => ['sometimes', 'boolean'],
+            'cost' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:1000000000'], // santim; recorded as an expense
         ];
     }
 }

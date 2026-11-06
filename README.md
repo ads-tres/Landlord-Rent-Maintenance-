@@ -239,6 +239,18 @@ The tenant pays; the money goes straight to the landlord's bank through Chapa sp
 - [ ] A test payment: checkout → webhook → verify → payment on the lease; the split shows our fee
 - [ ] Check the webhook signature header name and format against a real webhook
 
+## Expenses
+
+- `GET /expenses?property_id=&category=&from=&to=` (newest first, `meta.total` is the filtered sum), `POST /expenses` (multipart with an optional `photo` of the receipt), `GET|PATCH|DELETE /expenses/{id}`, `POST /expenses/{id}/photos`.
+- Categories: repair, maintenance (equipment service), land_lease, utility, tax, insurance, security_cleaning, other. Amounts in santim.
+- Automatic expenses, one per source, kept in step when the source changes:
+  - a repair's `cost` (`PATCH /maintenance/{id}` with `cost`, usually together with `status=done`)
+  - an equipment service logged with a cost
+  - the vacant units' share of a shared meter bill (removed when the bill is deleted)
+  They can't be edited or deleted directly; change the repair, service or bill instead. A receipt photo can still be added.
+- The quarterly report (JSON and PDF) adds `expenses_total`, `expenses_by_category`, per-property `expenses` and `net` (rent received minus expenses). It does not decide what is deductible; the PDF says to confirm that with an accountant.
+- The dashboard has `expenses_this_month`.
+
 ## Telegram bot
 
 Optional and free: when someone has linked the bot, their messages go to Telegram instead of SMS.
