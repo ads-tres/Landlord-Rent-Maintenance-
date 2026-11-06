@@ -16,6 +16,7 @@ return [
     'expenses' => 'Expenses',
     'expenses_total' => 'Total expenses',
     'no_expenses' => 'No expenses recorded in this quarter.',
+    'refunded' => 'Rent refunded',
     'net' => 'Net (received minus expenses)',
     'expenses_note' => 'Expenses are the costs you recorded in the app. Ask your accountant which ones count as deductible under the rental income tax rules.',
     'generated' => 'Generated on :date',

@@ -7,6 +7,7 @@ use App\Models\Lease;
 use App\Models\MoveOut;
 use App\Models\MoveOutDeduction;
 use App\Models\PaymentAllocation;
+use App\Models\RentRefund;
 use App\Models\SmsMessage;
 use App\Services\Payments\PaymentRecorder;
 use App\Services\Payments\ReceiptData;
@@ -275,6 +276,18 @@ class MoveOutService
                 'refund_reference' => $t['refund'] > 0 ? ($data['refund_reference'] ?? null) : null,
                 'settled_at' => now(),
             ])->save();
+
+            if ($t['prepaid'] > $t['prepaid_to_unpaid']) {
+                $refund = new RentRefund([
+                    'lease_id' => $lease->id,
+                    'move_out_id' => $moveOut->id,
+                    'amount' => $t['prepaid'] - $t['prepaid_to_unpaid'],
+                    'refunded_on' => today(),
+                    'reason' => 'prepaid_rent',
+                ]);
+                $refund->landlord_id = $lease->landlord_id;
+                $refund->save();
+            }
         });
 
         if ($notifyTenant) {

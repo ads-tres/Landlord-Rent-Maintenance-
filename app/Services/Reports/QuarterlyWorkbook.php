@@ -51,13 +51,14 @@ class QuarterlyWorkbook
         $writer->addRow(Row::fromValues([$t('landlord'), $landlord->name ?: $landlord->phone]));
         $writer->addRow(Row::fromValues([]));
         $writer->addRow(Row::fromValuesWithStyles([$t('income'), $birr($r['total'])], null, [1 => $moneyBold]));
+        $writer->addRow(Row::fromValuesWithStyles([$t('refunded'), $birr($r['refunded'])], null, [1 => $moneyBold]));
         $writer->addRow(Row::fromValuesWithStyles([$t('expenses'), $birr($r['expenses_total'])], null, [1 => $moneyBold]));
         $writer->addRow(Row::fromValuesWithStyles([$t('net'), $birr($r['net'])], null, [1 => $moneyBold]));
         $writer->addRow(Row::fromValues([]));
 
         $writer->addRow(Row::fromValues([$t('by_property'), $t('income'), $t('expenses'), $t('net')], $header));
         foreach ($r['by_property'] as $p) {
-            $writer->addRow(Row::fromValuesWithStyles([$p['property'], $birr($p['total']), $birr($p['expenses']), $birr($p['total'] - $p['expenses'])], null, [1 => $money, 2 => $money, 3 => $money]));
+            $writer->addRow(Row::fromValuesWithStyles([$p['property'], $birr($p['total']), $birr($p['expenses']), $birr($p['total'] - $p['refunded'] - $p['expenses'])], null, [1 => $money, 2 => $money, 3 => $money]));
         }
         $writer->addRow(Row::fromValues([]));
         $writer->addRow(Row::fromValues([$t('by_month'), $t('income')], $header));

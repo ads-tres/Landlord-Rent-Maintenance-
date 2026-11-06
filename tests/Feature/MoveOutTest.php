@@ -183,6 +183,16 @@ class MoveOutTest extends TestCase
 
         $token = MoveOut::query()->withoutGlobalScopes()->value('statement_token');
         $this->get("/mo/{$token}?lang=en")->assertSee('Rent already paid for after the move-out')->assertSee('Br 37,000');
+
+        // Reports count the refund against income.
+        $this->getJson('/api/v1/reports/quarterly?year=2026&quarter=4&calendar=gregorian')
+            ->assertJsonPath('data.total', 4_000_000)
+            ->assertJsonPath('data.refunded', 2_000_000)
+            ->assertJsonPath('data.net_rent', 2_000_000)
+            ->assertJsonPath('data.by_property.0.refunded', 2_000_000);
+        $this->getJson('/api/v1/dashboard')->assertJsonPath('data.collected_this_month', 2_000_000);
+        $this->get('/api/v1/reports/quarterly?year=2026&quarter=4&calendar=gregorian&format=pdf')->assertOk();
+        $this->get('/api/v1/reports/quarterly?year=2026&quarter=4&calendar=gregorian&format=xlsx')->assertOk();
     }
 
     public function test_prepaid_rent_covers_unpaid_charges_first(): void

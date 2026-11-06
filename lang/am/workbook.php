@@ -11,6 +11,7 @@ return [
     'period' => 'ጊዜ',
     'landlord' => 'አከራይ',
     'income' => 'የተቀበሉት ኪራይ (ብር)',
+    'refunded' => 'የተመለሰ ኪራይ (ብር)',
     'expenses' => 'ወጪዎች (ብር)',
     'net' => 'የተጣራ (ብር)',
     'by_property' => 'በንብረት',

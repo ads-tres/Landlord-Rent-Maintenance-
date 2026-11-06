@@ -5,6 +5,7 @@ namespace App\Services\Leases;
 use App\Models\Charge;
 use App\Models\Lease;
 use App\Models\Payment;
+use App\Models\RentRefund;
 use App\Services\Payments\ReceiptData;
 use App\Support\DateDisplay;
 use Carbon\CarbonImmutable;
@@ -25,7 +26,8 @@ class LeaseStatement
 
         $chargesBefore = (int) Charge::query()->where('lease_id', $lease->id)->where('due_date', '<', $from->toDateString())->sum('amount_due');
         $paidBefore = (int) Payment::query()->where('lease_id', $lease->id)->where('paid_at', '<', $from->toDateString())->sum('amount');
-        $opening = $chargesBefore - $paidBefore;
+        $refundedBefore = (int) RentRefund::query()->where('lease_id', $lease->id)->where('refunded_on', '<', $from->toDateString())->sum('amount');
+        $opening = $chargesBefore - $paidBefore + $refundedBefore;
 
         $lines = collect();
         Charge::query()->where('lease_id', $lease->id)
@@ -58,19 +60,18 @@ class LeaseStatement
                 'payment' => (int) $p->amount,
             ]));
 
-        // Rent paid ahead for after a move-out and refunded with the deposit.
-        $moveOut = $lease->moveOut()->first();
-        $refunded = $moveOut?->isSettled() ? $moveOut->prepaid - $moveOut->prepaid_to_unpaid : 0;
-        if ($refunded > 0 && $moveOut->settled_at->between($from->startOfDay(), $to->endOfDay())) {
-            $lines->push([
-                'date' => $moveOut->settled_at->toDateString(),
+        // Rent given back (e.g. paid ahead for after a move-out).
+        RentRefund::query()->where('lease_id', $lease->id)
+            ->whereBetween('refunded_on', [$from->toDateString(), $to->toDateString()])
+            ->get()
+            ->each(fn (RentRefund $r) => $lines->push([
+                'date' => $r->refunded_on->toDateString(),
                 'order' => 2,
                 'kind' => 'refund',
                 'description' => __('statement.prepaid_refund', [], $locale),
-                'charge' => $refunded,
+                'charge' => $r->amount,
                 'payment' => 0,
-            ]);
-        }
+            ]));
 
         $balance = $opening;
         $rows = $lines->sortBy([['date', 'asc'], ['order', 'asc']])->values()->map(function ($l) use (&$balance, $date, $birr, $locale) {

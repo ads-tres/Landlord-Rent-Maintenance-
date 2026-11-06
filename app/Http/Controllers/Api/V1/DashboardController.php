@@ -10,6 +10,7 @@ use App\Models\Lease;
 use App\Models\MaintenanceRequest;
 use App\Models\Payment;
 use App\Models\Property;
+use App\Models\RentRefund;
 use App\Models\Unit;
 use Illuminate\Http\JsonResponse;
 
@@ -29,8 +30,11 @@ class DashboardController extends Controller
 
         return response()->json(['data' => [
             'month' => now()->format('Y-m'),
+            // Net of rent given back this month (e.g. paid ahead for after a move-out).
             'collected_this_month' => (int) Payment::query()
                 ->whereBetween('paid_at', [now()->startOfMonth()->toDateString(), now()->endOfMonth()->toDateString()])
+                ->sum('amount') - (int) RentRefund::query()
+                ->whereBetween('refunded_on', [now()->startOfMonth()->toDateString(), now()->endOfMonth()->toDateString()])
                 ->sum('amount'),
             'expenses_this_month' => (int) Expense::query()
                 ->whereBetween('spent_on', [now()->startOfMonth()->toDateString(), now()->endOfMonth()->toDateString()])
