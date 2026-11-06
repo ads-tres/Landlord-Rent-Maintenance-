@@ -40,6 +40,7 @@ class User extends Authenticatable
             'is_pilot' => 'boolean',
             'online_rent_enabled' => 'boolean',
             'removed_at' => 'datetime',
+            'onboarding_dismissed_at' => 'datetime',
         ];
     }
 
