@@ -3,6 +3,9 @@
 namespace App\Http\Resources;
 
 use App\Models\Application;
+use App\Models\Lease;
+use App\Models\Tenant;
+use App\Services\Tenants\TenantRecord;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -21,7 +24,20 @@ class ApplicationResource extends JsonResource
             'message' => $this->message,
             'status' => $this->status,
             'lease_id' => $this->lease_id,
+            // Someone who rented from this landlord before: how they paid.
+            'former_tenant' => $this->formerTenant(),
             'created_at' => $this->created_at,
         ];
+    }
+
+    private function formerTenant(): ?array
+    {
+        $tenant = Tenant::query()
+            ->where('landlord_id', $this->listing?->landlord_id)
+            ->where('phone', $this->phone)
+            ->whereHas('leases', fn ($q) => $q->where('status', '!=', Lease::STATUS_DRAFT))
+            ->first();
+
+        return $tenant ? ['tenant_id' => $tenant->id, 'full_name' => $tenant->full_name] + app(TenantRecord::class)->summary($tenant) : null;
     }
 }

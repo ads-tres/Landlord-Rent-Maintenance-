@@ -33,6 +33,7 @@ use App\Http\Controllers\Api\V1\TelegramLinkController;
 use App\Http\Controllers\Api\V1\TenantController;
 use App\Http\Controllers\Api\V1\TenantMessagesController;
 use App\Http\Controllers\Api\V1\TenantPrivacyController;
+use App\Http\Controllers\Api\V1\TenantRecordController;
 use App\Http\Controllers\Api\V1\UnitController;
 use App\Http\Controllers\Api\V1\UnitHistoryController;
 use App\Http\Controllers\Api\V1\UnitListController;
@@ -76,6 +77,8 @@ Route::prefix('v1')->group(function () {
         Route::get('vacancy', [UnitHistoryController::class, 'vacancy']);
         Route::apiResource('tenants', TenantController::class);
         Route::get('tenants/{tenant}/messages', TenantMessagesController::class);
+        Route::get('tenants/{tenant}/record', [TenantRecordController::class, 'show']);
+        Route::put('tenants/{tenant}/notes', [TenantRecordController::class, 'notes']);
         Route::get('tenants/{tenant}/export', [TenantPrivacyController::class, 'export']);
         Route::post('tenants/{tenant}/anonymize', [TenantPrivacyController::class, 'anonymize']);
 
