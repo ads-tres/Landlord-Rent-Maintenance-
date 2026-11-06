@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Str;
 
 class Lease extends Model
@@ -23,7 +24,7 @@ class Lease extends Model
 
     protected $fillable = [
         'unit_id', 'tenant_id', 'start_date', 'end_date', 'terminated_on', 'monthly_rent', 'deposit',
-        'due_day', 'due_calendar', 'condition_notes', 'registered_at', 'status', 'repair_token', 'pay_token', 'portal_token',
+        'due_day', 'due_calendar', 'condition_notes', 'extra_terms', 'registered_at', 'registration_number', 'registration_office', 'status', 'repair_token', 'pay_token', 'portal_token',
     ];
 
     protected $attributes = [
@@ -128,6 +129,18 @@ class Lease extends Model
     public function moveOut(): HasOne
     {
         return $this->hasOne(MoveOut::class);
+    }
+
+    /** Photos of the signed agreement. */
+    public function attachments(): MorphMany
+    {
+        return $this->morphMany(Attachment::class, 'attachable');
+    }
+
+    /** Active and not yet registered with the woreda or sub-city office. */
+    public function scopeUnregistered(Builder $query): void
+    {
+        $query->active()->whereNull('registered_at');
     }
 
     public function renewals(): HasMany

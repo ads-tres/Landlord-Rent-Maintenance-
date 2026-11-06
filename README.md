@@ -294,6 +294,20 @@ Landlord alerts go to the landlord's phone as push notifications through Firebas
 
 Amounts are numbers formatted as `#,##0.00`, so they add up in Excel. Sheet names and headers follow the app language.
 
+## Lease agreement and registration
+
+- `GET /leases/{id}/agreement?language=am|en|both` generates the written lease as a PDF.
+  - It covers: the parties; the home; the term; rent and payment (due day, accepted methods, receipts); the deposit; electricity and water (shared meters and how each is split, or the tenant pays their own); rent changes within the yearly cap; use of the home; repairs; condition at the start; the end of the lease; and registration.
+  - The landlord's extra terms appear as their own clause. The PDF ends with signature and witness lines, plus a page on registering the agreement.
+  - Dates show the landlord's calendar with the other calendar alongside. `both` puts the English text under each Amharic clause.
+  - Missing details print as blank lines to fill in by hand. Leases return `agreement_blanks` so the app can point them out first.
+  - It is a plain-language template, not legal advice, and the footer says so.
+- `PUT /leases/{id}/extra-terms {extra_terms}` sets the extra terms.
+- `PUT /leases/{id}/registration {registered_at, registration_number?, registration_office?}` records the registration, and `DELETE` clears it.
+- `POST /leases/{id}/documents {photo}` stores photos of the signed copy (up to 10, returned as `documents`).
+- `GET /leases?unregistered=1` lists active leases that aren't registered yet, and the dashboard returns `unregistered_leases`.
+- All of the above is landlord only.
+
 ## Lease renewal
 
 - `GET /leases/{id}/renewal-check` returns the suggested new end date (another 2 years), the rent from the day after the current end, the highest rent allowed under the yearly cap, and when renewing becomes possible.

@@ -41,6 +41,7 @@ class DashboardController extends Controller
             'late_amount' => (int) $late->sum(fn (Charge $c) => $c->amount_due - (int) $c->paid),
             'open_repairs' => MaintenanceRequest::query()->where('status', '!=', 'done')->count(),
             'leases_ending_soon' => Lease::query()->endingWithin(60)->count(),
+            'unregistered_leases' => Lease::query()->unregistered()->count(),
             'services_due' => Asset::query()->get()->filter(fn (Asset $a) => $a->isDueWithin(7))->count(),
             'properties' => Property::query()->count(),
             'units' => Unit::query()->count(),
