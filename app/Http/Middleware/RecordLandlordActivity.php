@@ -20,10 +20,12 @@ class RecordLandlordActivity
         $response = $next($request);
 
         $user = $request->user();
-        if ($user instanceof User && $user->role === User::ROLE_LANDLORD) {
+        // A caretaker's work counts as their landlord using the app.
+        if ($user instanceof User && in_array($user->role, [User::ROLE_LANDLORD, User::ROLE_CARETAKER], true)) {
             $day = now()->toDateString();
-            Cache::remember("activity:{$user->id}:{$day}", now()->endOfDay(), function () use ($user, $day) {
-                DB::table('landlord_activity_days')->insertOrIgnore(['landlord_id' => $user->id, 'day' => $day]);
+            $landlordId = $user->landlordId();
+            Cache::remember("activity:{$landlordId}:{$day}", now()->endOfDay(), function () use ($landlordId, $day) {
+                DB::table('landlord_activity_days')->insertOrIgnore(['landlord_id' => $landlordId, 'day' => $day]);
 
                 return true;
             });

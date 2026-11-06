@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\V1\RepairLinkController;
 use App\Http\Controllers\Api\V1\ReportController;
 use App\Http\Controllers\Api\V1\RulesController;
 use App\Http\Controllers\Api\V1\SignedAttachmentController;
+use App\Http\Controllers\Api\V1\TeamController;
 use App\Http\Controllers\Api\V1\TelegramLinkController;
 use App\Http\Controllers\Api\V1\TenantController;
 use App\Http\Controllers\Api\V1\TenantPrivacyController;
@@ -28,6 +29,7 @@ use App\Http\Controllers\Api\V1\UnitListController;
 use App\Http\Controllers\Api\V1\UtilityBillController;
 use App\Http\Controllers\ChapaWebhookController;
 use App\Http\Controllers\TelegramWebhookController;
+use App\Http\Middleware\CaretakerLimits;
 use App\Http\Middleware\RecordLandlordActivity;
 use Illuminate\Support\Facades\Route;
 
@@ -45,7 +47,7 @@ Route::prefix('v1')->group(function () {
     Route::post('auth/otp', [AuthController::class, 'sendOtp'])->middleware('throttle:otp');
     Route::post('auth/verify', [AuthController::class, 'verify'])->middleware('throttle:10,1');
 
-    Route::middleware(['auth:sanctum', RecordLandlordActivity::class])->group(function () {
+    Route::middleware(['auth:sanctum', CaretakerLimits::class, RecordLandlordActivity::class])->group(function () {
         Route::get('auth/me', [AuthController::class, 'me']);
         Route::patch('auth/me', [AuthController::class, 'updateMe']);
         Route::post('auth/logout', [AuthController::class, 'logout']);
@@ -119,6 +121,10 @@ Route::prefix('v1')->group(function () {
         Route::get('payout-account', [OnlineRentController::class, 'show']);
         Route::put('payout-account', [OnlineRentController::class, 'update']);
         Route::post('leases/{lease}/pay-link/send', [OnlineRentController::class, 'sendPayLink']);
+
+        Route::get('team', [TeamController::class, 'index']);
+        Route::post('team', [TeamController::class, 'store'])->middleware('throttle:10,60');
+        Route::delete('team/{member}', [TeamController::class, 'destroy']);
 
         Route::post('telegram/link', [TelegramLinkController::class, 'store']);
         Route::delete('telegram/link', [TelegramLinkController::class, 'destroy']);

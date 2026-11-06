@@ -36,6 +36,11 @@ class MaintenanceRequest extends Model
         return $this->belongsTo(Unit::class);
     }
 
+    public function handledBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'handled_by');
+    }
+
     public function tenant(): BelongsTo
     {
         return $this->belongsTo(Tenant::class);

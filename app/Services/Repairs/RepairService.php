@@ -9,6 +9,7 @@ use App\Models\Unit;
 use App\Models\User;
 use App\Services\Sms\SmsNotifier;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class RepairService
@@ -77,7 +78,11 @@ class RepairService
             'status' => $status,
             'resolution_note' => $note ?? $request->resolution_note,
             'closed_at' => $status === 'done' ? ($request->closed_at ?? now()) : null,
-        ])->save();
+        ]);
+        if ($changed && Auth::id()) {
+            $request->handled_by = Auth::id();
+        }
+        $request->save();
 
         if ($changed && $notifyTenant && $status !== 'open' && $request->tenant) {
             $request->loadMissing('unit');

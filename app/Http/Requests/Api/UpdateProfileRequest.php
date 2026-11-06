@@ -8,6 +8,15 @@ class UpdateProfileRequest extends FormRequest
 {
     public function rules(): array
     {
+        // Rent reminders and online rent are the landlord's settings.
+        if ($this->user()->isCaretaker()) {
+            return [
+                'name' => ['sometimes', 'nullable', 'string', 'max:255'],
+                'locale' => ['sometimes', 'in:am,en'],
+                'calendar_pref' => ['sometimes', 'in:ethiopian,gregorian'],
+            ];
+        }
+
         return [
             'name' => ['sometimes', 'nullable', 'string', 'max:255'],
             'locale' => ['sometimes', 'in:am,en'],

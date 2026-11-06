@@ -30,7 +30,7 @@ class LeaseResource extends JsonResource
             'registered_at' => $this->registered_at?->toDateString(),
             'status' => $this->status,
             'move_out' => $this->moveOut ? ['id' => $this->moveOut->id, 'status' => $this->moveOut->status] : null,
-            'pay_url' => $this->status === Lease::STATUS_ACTIVE && $request->user()?->acceptsOnlineRent() ? $this->payUrl() : null,
+            'pay_url' => $this->status === Lease::STATUS_ACTIVE && $request->user()?->actingLandlord()->acceptsOnlineRent() ? $this->payUrl() : null,
             'portal_url' => $this->portalUrl(),
             'repair_url' => $this->status === Lease::STATUS_ACTIVE ? $this->repairUrl() : null,
             'days_until_end' => $this->status === Lease::STATUS_ACTIVE

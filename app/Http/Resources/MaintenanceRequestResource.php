@@ -22,6 +22,7 @@ class MaintenanceRequestResource extends JsonResource
             'resolution_note' => $this->resolution_note,
             'cost' => $this->cost,
             'status' => $this->status,
+            'handled_by_name' => $this->handled_by && $this->handled_by !== $this->landlord_id ? $this->handledBy?->name : null,
             'source' => $this->source,
             'opened_at' => $this->opened_at,
             'closed_at' => $this->closed_at,
