@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\V1\AttachmentController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\ChargeController;
 use App\Http\Controllers\Api\V1\DashboardController;
+use App\Http\Controllers\Api\V1\DeviceController;
 use App\Http\Controllers\Api\V1\ExpenseController;
 use App\Http\Controllers\Api\V1\LeaseController;
 use App\Http\Controllers\Api\V1\LeaseRenewalController;
@@ -52,6 +53,8 @@ Route::prefix('v1')->group(function () {
         Route::get('auth/me', [AuthController::class, 'me']);
         Route::patch('auth/me', [AuthController::class, 'updateMe']);
         Route::post('auth/logout', [AuthController::class, 'logout']);
+        Route::post('devices', [DeviceController::class, 'store']);
+        Route::delete('devices', [DeviceController::class, 'destroy']);
 
         Route::apiResource('properties', PropertyController::class);
         Route::apiResource('properties.units', UnitController::class)->shallow();

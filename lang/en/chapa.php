@@ -21,4 +21,5 @@ return [
     'try_again' => 'Try again',
     'pending' => 'We are waiting for Chapa to confirm the payment. This can take a minute.',
     'check_again' => 'Check again',
+    'landlord_paid' => ':tenant paid :amount online for :unit.',
 ];

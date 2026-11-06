@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\User;
+use App\Services\Push\FcmClient;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -18,6 +19,8 @@ class UserResource extends JsonResource
             'locale' => $this->locale,
             'calendar_pref' => $this->calendar_pref,
             'sms_reminders' => (bool) $this->sms_reminders,
+            'push_enabled' => (bool) $this->push_enabled,
+            'push_available' => app(FcmClient::class)->enabled(),
             'role' => $this->role,
             'landlord_name' => $this->isCaretaker() ? ($this->employer?->name ?: $this->employer?->phone) : null,
             'online_rent_available' => filled(config('chapa.secret_key')),
