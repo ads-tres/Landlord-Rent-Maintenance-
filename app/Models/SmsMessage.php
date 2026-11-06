@@ -23,6 +23,8 @@ class SmsMessage extends Model
 
     public const KIND_ONLINE_PAYMENT = 'online_payment';
 
+    public const KIND_ARREARS = 'arrears';
+
     public const KIND_RENEWAL_REMINDER = 'renewal_reminder';
 
     public const KIND_CARETAKER_PAYMENT = 'caretaker_payment';

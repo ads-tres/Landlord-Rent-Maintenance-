@@ -31,3 +31,6 @@ Schedule::command('chapa:reconcile')->everyFifteenMinutes()->withoutOverlapping(
 
 // Leases ending in 60 and 30 days: tell the landlord in time to agree a renewal.
 Schedule::command('leases:renewal-reminders')->dailyAt('09:10')->withoutOverlapping()->onOneServer();
+
+// Payment plan instalment reminders (the day before) and plan status.
+Schedule::command('arrears:plans')->dailyAt('10:20')->withoutOverlapping()->onOneServer();

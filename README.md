@@ -251,6 +251,18 @@ The tenant pays; the money goes straight to the landlord's bank through Chapa sp
 - The quarterly report (JSON and PDF) adds `expenses_total`, `expenses_by_category`, per-property `expenses` and `net` (rent received minus expenses). It does not decide what is deductible; the PDF says to confirm that with an accountant.
 - The dashboard has `expenses_this_month`.
 
+## Arrears follow-up
+
+- `GET /arrears` lists active leases with overdue rent, most overdue first. Each row has the amount owed, days overdue, months behind, the last action, an active payment plan with its progress, and the **suggested next step**.
+  - The steps go in order: a friendly reminder (15+ days), then a firm notice (30+), then a demand letter (45+). A very late tenant still gets the reminder first.
+  - Nothing is suggested while a payment plan is active.
+- `GET /leases/{id}/arrears` gives the overdue charges and the action history.
+- `POST /leases/{id}/arrears/actions {kind: reminder|notice|note}` texts the reminder or notice (with the tenant page link) or saves a note. Every action is logged with the amount owed, the days overdue, and who did it.
+- `GET /leases/{id}/arrears/demand-letter` returns a formal letter as a PDF, in Amharic or English. It lists each unpaid month, gives a 15-day deadline, includes the online pay link when online rent is on, and offers a payment plan. The download is logged. Landlord only.
+- `POST /leases/{id}/payment-plan {instalments: [{due_date, amount}], notify_tenant?}` sets up a payment plan. The instalments must add up to what is overdue. Landlord only.
+  - Progress is measured as the plan total minus what is still unpaid on the charges that were overdue when the plan started. This works because payments always settle the oldest charges first.
+  - `arrears:plans` runs daily at 10:20. It reminds the tenant the day before each instalment, marks the plan completed once it's paid, and marks it broken when an instalment is more than a week late.
+
 ## Push notifications
 
 Landlord alerts go to the landlord's phone as push notifications through Firebase Cloud Messaging (HTTP v1), and also to Telegram if the landlord has linked it. These alerts are:
