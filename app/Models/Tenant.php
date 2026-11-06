@@ -12,14 +12,14 @@ class Tenant extends Model
 {
     use BelongsToLandlord, HasFactory;
 
-    protected $fillable = ['full_name', 'phone', 'id_number', 'address'];
+    protected $fillable = ['full_name', 'phone', 'id_number', 'address', 'reminders_opt_out'];
 
     protected $hidden = ['id_number'];
 
     protected function casts(): array
     {
         // ID numbers are personal data under Proclamation 1321/2024: encrypt at rest.
-        return ['id_number' => 'encrypted'];
+        return ['id_number' => 'encrypted', 'reminders_opt_out' => 'boolean'];
     }
 
     public function leases(): HasMany

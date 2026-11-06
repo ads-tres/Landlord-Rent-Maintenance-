@@ -212,7 +212,7 @@ class ArrearsService
                     return;
                 }
                 $next = $plan->instalments->firstWhere('id', $p['next']['id']);
-                if ($next && ! $next->reminded_at && $next->due_date->isTomorrow()) {
+                if ($next && ! $next->reminded_at && $next->due_date->isTomorrow() && ! $lease->tenant?->reminders_opt_out) {
                     $locale = $lease->landlord?->locale ?: 'am';
                     $calendar = $lease->landlord?->calendar_pref ?: DateDisplay::GREGORIAN;
                     $this->sms->toTenant($lease->tenant, SmsMessage::KIND_ARREARS, __('arrears.sms.instalment', [

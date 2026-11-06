@@ -47,11 +47,12 @@ class SmsMessage extends Model
 
     public const KIND_REPAIR_LINK = 'repair_link';
 
-    protected $fillable = ['landlord_id', 'to', 'channel', 'kind', 'related_type', 'related_id', 'body', 'segments', 'status', 'error', 'sent_at'];
+    protected $fillable = ['landlord_id', 'to', 'channel', 'kind', 'related_type', 'related_id', 'body', 'segments', 'status', 'error', 'sent_at', 'send_after'];
 
     protected function casts(): array
     {
-        return ['sent_at' => 'datetime', 'segments' => 'integer'];
+        return [
+            'send_after' => 'datetime', 'sent_at' => 'datetime', 'segments' => 'integer'];
     }
 
     public function related(): MorphTo

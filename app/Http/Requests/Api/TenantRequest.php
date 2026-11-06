@@ -21,6 +21,7 @@ class TenantRequest extends FormRequest
             // Collect only what the lease needs (Proclamation 1321/2024).
             'id_number' => ['nullable', 'string', 'max:50'],
             'address' => ['nullable', 'string', 'max:255'],
+            'reminders_opt_out' => ['sometimes', 'boolean'],
             // The landlord must confirm the tenant was shown the privacy notice.
             'privacy_notice_shown' => $creating ? ['required', 'accepted'] : ['prohibited'],
             'notice_locale' => ['sometimes', 'in:am,en'],

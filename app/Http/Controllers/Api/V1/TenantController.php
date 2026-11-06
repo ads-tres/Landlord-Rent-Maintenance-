@@ -60,7 +60,7 @@ class TenantController extends Controller
     public function update(TenantRequest $request, Tenant $tenant): TenantResource
     {
         Gate::authorize('update', $tenant);
-        $tenant->update(Arr::only($request->validated(), ['full_name', 'phone', 'id_number', 'address']));
+        $tenant->update(Arr::only($request->validated(), ['full_name', 'phone', 'id_number', 'address', 'reminders_opt_out']));
 
         return new TenantResource($tenant);
     }

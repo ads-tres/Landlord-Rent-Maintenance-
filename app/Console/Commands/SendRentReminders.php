@@ -39,7 +39,7 @@ class SendRentReminders extends Command
                 ->withSum('allocations as paid', 'amount')
                 ->chunkById(200, function ($charges) use ($kind, $sms, &$sent) {
                     foreach ($charges as $charge) {
-                        if ($sms->alreadySent($kind, $charge) || ! $charge->lease?->tenant) {
+                        if ($sms->alreadySent($kind, $charge) || ! $charge->lease?->tenant || $charge->lease->tenant->reminders_opt_out) {
                             continue;
                         }
 
