@@ -8,6 +8,7 @@ use App\Http\Requests\Api\UpdateMaintenanceRequest;
 use App\Http\Resources\MaintenanceRequestResource;
 use App\Models\MaintenanceRequest;
 use App\Models\Unit;
+use App\Services\Expenses\ExpenseRecorder;
 use App\Services\Repairs\PhotoStore;
 use App\Services\Repairs\RepairService;
 use Illuminate\Database\Eloquent\Builder;
@@ -66,7 +67,7 @@ class MaintenanceController extends Controller
         Gate::authorize('update', $maintenance);
         $data = $request->validated();
 
-        $maintenance->fill(array_intersect_key($data, array_flip(['title', 'category', 'description'])))->save();
+        $maintenance->fill(array_intersect_key($data, array_flip(['title', 'category', 'description', 'cost'])))->save();
 
         if (isset($data['status']) || array_key_exists('note', $data)) {
             $this->repairs->updateStatus(
@@ -76,6 +77,10 @@ class MaintenanceController extends Controller
                 $request->boolean('notify_tenant', true),
                 $request->user()->locale,
             );
+        }
+
+        if (array_key_exists('cost', $data)) {
+            app(ExpenseRecorder::class)->fromRepair($maintenance->refresh());
         }
 
         return new MaintenanceRequestResource($this->loadDetail($maintenance));

@@ -7,6 +7,7 @@ use App\Http\Resources\AssetResource;
 use App\Models\Asset;
 use App\Models\AssetService;
 use App\Models\Property;
+use App\Services\Expenses\ExpenseRecorder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
@@ -77,6 +78,7 @@ class AssetController extends Controller
             $service = new AssetService(['asset_id' => $asset->id] + $data);
             $service->landlord_id = $asset->landlord_id;
             $service->save();
+            app(ExpenseRecorder::class)->fromService($service);
 
             if (! $asset->last_serviced_on || $asset->last_serviced_on->lt($data['serviced_on'])) {
                 $asset->forceFill(['last_serviced_on' => $data['serviced_on'], 'last_reminded_on' => null])->save();

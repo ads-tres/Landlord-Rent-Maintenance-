@@ -2,6 +2,7 @@
 
 namespace App\Services\Reports;
 
+use App\Models\Expense;
 use App\Models\Payment;
 use App\Support\DateDisplay;
 use App\Support\EthiopianDate;
@@ -64,6 +65,13 @@ class QuarterlyReport
             ->orderBy('paid_at')
             ->get();
 
+        $expenses = Expense::query()
+            ->with('property:id,name')
+            ->whereBetween('spent_on', [$from->toDateString(), $to->toDateString()])
+            ->get();
+        $income = (int) $payments->sum('amount');
+        $spent = (int) $expenses->sum('amount');
+
         $monthKey = fn (Payment $p) => $calendar === DateDisplay::ETHIOPIAN
             ? (function () use ($p) {
                 $e = EthiopianDate::fromGregorian($p->paid_at);
@@ -89,7 +97,17 @@ class QuarterlyReport
             'to' => $to->toDateString(),
             'from_display' => DateDisplay::date($from, $locale, $calendar),
             'to_display' => DateDisplay::date($to, $locale, $calendar),
-            'total' => (int) $payments->sum('amount'),
+            'total' => $income,
+            // Costs recorded in the app. Whether each one is deductible is for an accountant to confirm.
+            'expenses_total' => $spent,
+            'expenses_count' => $expenses->count(),
+            'net' => $income - $spent,
+            'expenses_by_category' => $expenses->groupBy('category')
+                ->map(fn ($group, $category) => [
+                    'category' => $category,
+                    'label' => __('expenses.categories.'.$category, [], $locale),
+                    'total' => (int) $group->sum('amount'),
+                ])->sortByDesc('total')->values()->all(),
             'payments_count' => $payments->count(),
             'by_month' => $payments->groupBy($monthKey)->map(fn ($group, $key) => [
                 'key' => $key,
@@ -101,6 +119,7 @@ class QuarterlyReport
                 ->map(fn ($group, $name) => [
                     'property' => $name,
                     'total' => (int) $group->sum('amount'),
+                    'expenses' => (int) $expenses->filter(fn (Expense $e) => $e->property?->name === $name)->sum('amount'),
                     'units' => $group->groupBy(fn (Payment $p) => $p->lease?->unit?->label ?? '—')
                         ->map(fn ($g, $label) => ['unit' => $label, 'total' => (int) $g->sum('amount'), 'count' => $g->count()])
                         ->sortKeys(SORT_NATURAL)->values()->all(),

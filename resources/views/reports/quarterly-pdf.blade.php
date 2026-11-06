@@ -39,6 +39,23 @@
         <tr><td class="strong">{{ __('reports.total') }}</td><td class="right strong">{{ $birr($r['total']) }}</td></tr>
     </table>
 
+    <h2>{{ __('reports.expenses') }}</h2>
+    <table>
+        @forelse ($r['expenses_by_category'] as $c)
+            <tr><td>{{ $c['label'] }}</td><td class="right">{{ $birr($c['total']) }}</td></tr>
+        @empty
+            <tr><td class="muted">{{ __('reports.no_expenses') }}</td><td></td></tr>
+        @endforelse
+        <tr><td class="strong">{{ __('reports.expenses_total') }}</td><td class="right strong">{{ $birr($r['expenses_total']) }}</td></tr>
+    </table>
+
+    <h2>{{ __('reports.net') }}</h2>
+    <table>
+        <tr><td>{{ __('reports.total') }}</td><td class="right">{{ $birr($r['total']) }}</td></tr>
+        <tr><td>{{ __('reports.expenses_total') }}</td><td class="right">− {{ $birr($r['expenses_total']) }}</td></tr>
+        <tr><td class="strong">{{ __('reports.net') }}</td><td class="right strong">{{ $r['net'] < 0 ? '− ' : '' }}{{ $birr(abs($r['net'])) }}</td></tr>
+    </table>
+
     @if ($r['by_property'])
         <h2>{{ __('reports.by_property') }}</h2>
         <table>
@@ -61,6 +78,7 @@
     @endif
 
     <p class="note">{{ __('reports.disclaimer') }}</p>
+    <p class="note">{{ __('reports.expenses_note') }}</p>
     <p class="note">{{ __('reports.generated', ['date' => \App\Support\DateDisplay::date(now(), $locale, $r['calendar'])]) }}</p>
 </body>
 </html>

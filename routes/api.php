@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\V1\AttachmentController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\ChargeController;
 use App\Http\Controllers\Api\V1\DashboardController;
+use App\Http\Controllers\Api\V1\ExpenseController;
 use App\Http\Controllers\Api\V1\LeaseController;
 use App\Http\Controllers\Api\V1\ListingController;
 use App\Http\Controllers\Api\V1\MaintenanceController;
@@ -75,6 +76,9 @@ Route::prefix('v1')->group(function () {
 
         Route::get('dashboard', DashboardController::class);
         Route::get('reports/quarterly', [ReportController::class, 'quarterly']);
+
+        Route::apiResource('expenses', ExpenseController::class);
+        Route::post('expenses/{expense}/photos', [ExpenseController::class, 'addPhoto']);
 
         Route::apiResource('maintenance', MaintenanceController::class)->except('destroy');
         Route::post('maintenance/{maintenance}/photos', [MaintenanceController::class, 'addPhoto']);

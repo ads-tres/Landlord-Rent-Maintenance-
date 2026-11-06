@@ -16,7 +16,7 @@ class MaintenanceRequest extends Model
     public const CATEGORIES = ['water', 'electric', 'plumbing', 'door_lock', 'roof', 'appliance', 'other'];
 
     protected $fillable = [
-        'unit_id', 'tenant_id', 'lease_id', 'title', 'category', 'description', 'resolution_note',
+        'unit_id', 'tenant_id', 'lease_id', 'title', 'category', 'description', 'resolution_note', 'cost',
         'status', 'source', 'opened_at', 'closed_at',
     ];
 
@@ -27,6 +27,7 @@ class MaintenanceRequest extends Model
         return [
             'opened_at' => 'datetime',
             'closed_at' => 'datetime',
+            'cost' => 'integer',
         ];
     }
 
