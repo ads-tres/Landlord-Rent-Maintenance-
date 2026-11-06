@@ -26,6 +26,7 @@ class LeaseAgreement
 
         return array_values(array_filter([
             blank($lease->landlord?->name) ? 'landlord_name' : null,
+            blank($lease->landlord?->id_number) ? 'landlord_id_number' : null,
             blank($lease->tenant?->address) ? 'tenant_address' : null,
             blank($lease->tenant?->id_number) ? 'tenant_id_number' : null,
             $property && blank($property->sub_city) && blank($property->woreda) && blank($property->address) ? 'property_location' : null,
@@ -68,7 +69,8 @@ class LeaseAgreement
             ['parties', [
                 'landlord' => $orBlank($landlord?->name),
                 'landlord_phone' => $orBlank($landlord?->phone),
-                'landlord_id' => self::BLANK,
+                'landlord_id' => $orBlank($landlord?->id_number),
+                'landlord_address' => $orBlank($landlord?->address),
                 'tenant' => $orBlank($tenant->full_name),
                 'tenant_phone' => $orBlank($tenant->phone),
                 'tenant_id' => $orBlank($tenant->id_number),

@@ -108,6 +108,7 @@ class ArrearsController extends Controller
             'locale' => $locale,
             'landlord' => $lease->landlord?->name ?: $lease->landlord?->phone,
             'landlordPhone' => $lease->landlord?->phone,
+            'landlordAddress' => $lease->landlord?->address,
             'tenant' => $lease->tenant->full_name,
             'place' => $lease->unit->label.' · '.$lease->unit->property->name,
             'start' => $date($lease->start_date),

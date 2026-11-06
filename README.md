@@ -326,6 +326,7 @@ By default it covers the whole lease up to today. The PDF can be shared with the
   - Dates show the landlord's calendar with the other calendar alongside. `both` puts the English text under each Amharic clause.
   - Missing details print as blank lines to fill in by hand. Leases return `agreement_blanks` so the app can point them out first.
   - It is a plain-language template, not legal advice, and the footer says so.
+- The landlord's ID number (stored encrypted) and address come from `PATCH /auth/me {id_number, address}`. They print on the agreement, and the address also prints on demand letters and statements.
 - `PUT /leases/{id}/extra-terms {extra_terms}` sets the extra terms.
 - `PUT /leases/{id}/registration {registered_at, registration_number?, registration_office?}` records the registration, and `DELETE` clears it.
 - `POST /leases/{id}/documents {photo}` stores photos of the signed copy (up to 10, returned as `documents`).

@@ -71,7 +71,7 @@ class LeaseStatement
             'lease_id' => $lease->id,
             'tenant' => $lease->tenant->full_name,
             'place' => $lease->unit->label.' · '.$lease->unit->property->name,
-            'landlord' => $lease->landlord?->name ?: $lease->landlord?->phone,
+            'landlord' => collect([$lease->landlord?->name ?: $lease->landlord?->phone, $lease->landlord?->name ? $lease->landlord?->phone : null, $lease->landlord?->address])->filter()->implode(', '),
             'from' => $from->toDateString(),
             'to' => $to->toDateString(),
             'from_display' => $date($from),

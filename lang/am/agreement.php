@@ -23,7 +23,7 @@ return [
     'clauses' => [
         'parties' => [
             'title' => 'ተዋዋይ ወገኖች',
-            'text' => "ይህ የመኖሪያ ቤት ኪራይ ውል በሚከተሉት መካከል የተደረገ ነው፦\nአከራይ፦ :landlord፣ ስልክ :landlord_phone፣ የመታወቂያ ቁጥር :landlord_id።\nተከራይ፦ :tenant፣ ስልክ :tenant_phone፣ የመታወቂያ ቁጥር :tenant_id፣ አድራሻ :tenant_address።",
+            'text' => "ይህ የመኖሪያ ቤት ኪራይ ውል በሚከተሉት መካከል የተደረገ ነው፦\nአከራይ፦ :landlord፣ ስልክ :landlord_phone፣ የመታወቂያ ቁጥር :landlord_id፣ አድራሻ :landlord_address።\nተከራይ፦ :tenant፣ ስልክ :tenant_phone፣ የመታወቂያ ቁጥር :tenant_id፣ አድራሻ :tenant_address።",
         ],
         'home' => [
             'title' => 'የሚከራየው ቤት',
