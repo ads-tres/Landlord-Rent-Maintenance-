@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\User;
+use App\Services\Account\AccountDeletion;
 use App\Services\Push\FcmClient;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -24,6 +25,7 @@ class UserResource extends JsonResource
             'push_enabled' => (bool) $this->push_enabled,
             'push_available' => app(FcmClient::class)->enabled(),
             'role' => $this->role,
+            'deletion_scheduled_for' => $this->deletion_requested_at?->copy()->addDays(AccountDeletion::GRACE_DAYS)->toDateString(),
             'landlord_name' => $this->isCaretaker() ? ($this->employer?->name ?: $this->employer?->phone) : null,
             'online_rent_available' => filled(config('chapa.secret_key')),
             'online_rent_enabled' => $this->actingLandlord()->acceptsOnlineRent(),
