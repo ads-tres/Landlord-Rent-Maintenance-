@@ -1,0 +1,37 @@
+<?php
+
+return [
+    'lease_not_active' => 'መልቀቅ የሚቻለው ንቁ ውል ላይ ብቻ ነው።',
+    'already_settled' => 'ይህ መልቀቅ ተጠናቋል።',
+    'not_settled' => 'መጀመሪያ መልቀቁን ያጠናቁ።',
+    'charge_deduction' => 'ያልተከፈለ ኪራይ እና የአገልግሎት ድርሻ ከተቀማጩ ይቀነሳል ወይም እዳ ሆኖ ይቀራል። ለመተው ከፈለጉ በውሉ ላይ ያለውን እዳ ያስተካክሉ።',
+    'refund_method_required' => 'ተመላሹ በምን እንደተከፈለ ይምረጡ።',
+    'too_many_photos' => 'አንድ መልቀቅ ከ12 በላይ ፎቶ ሊኖረው አይችልም።',
+    'deposit_payment_note' => 'በመልቀቅ ጊዜ ከተቀማጩ የተከፈለ',
+    'kinds' => [
+        'unpaid_rent' => 'ያልተከፈለ ኪራይ',
+        'unpaid_utility' => 'ያልተከፈለ የአገልግሎት ድርሻ',
+        'damage' => 'ጉዳት',
+        'cleaning' => 'ጽዳት',
+        'keys' => 'ቁልፍ',
+        'other' => 'ሌላ',
+    ],
+    'statement' => [
+        'title' => 'የተቀማጭ ሂሳብ መግለጫ',
+        'tenant' => 'ተከራይ',
+        'unit' => 'ቤት',
+        'lease' => 'ውል',
+        'moved_out' => 'የለቀቁበት ቀን',
+        'keys' => 'ቁልፍ ተመልሷል',
+        'yes' => 'አዎ',
+        'no' => 'አይ',
+        'landlord' => 'አከራይ',
+        'deposit' => 'የተያዘ ተቀማጭ',
+        'no_deductions' => 'ምንም ቅናሽ የለም',
+        'refund' => 'ተመላሽ',
+        'refunded_by' => 'በ:method ተመልሷል',
+        'balance' => 'ተቀማጩ ሁሉንም አልሸፈነም፤ :amount አሁንም ይቀራል።',
+        'condition' => 'በመልቀቅ ጊዜ የቤቱ ሁኔታ',
+        'settled_on' => ':date ተጠናቋል',
+    ],
+];

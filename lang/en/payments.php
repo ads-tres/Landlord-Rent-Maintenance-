@@ -2,12 +2,13 @@
 
 return [
     'exceeds_owed' => 'This is more than the lease owes, including all remaining months. The most you can log is Br :max.',
-    'cannot_void_online' => 'Online payments cannot be removed here.',
+    'cannot_void_online' => 'Online and deposit payments cannot be removed here.',
     'methods' => [
         'cash' => 'Cash',
         'telebirr' => 'Telebirr',
         'bank' => 'Bank transfer',
         'chapa' => 'Chapa',
+        'deposit' => 'From deposit',
     ],
     'telegram_cta' => 'Get receipts and repair updates on Telegram (free)',
     'receipt' => [

@@ -12,7 +12,7 @@ class Payment extends Model
 {
     use BelongsToLandlord;
 
-    public const METHODS = ['cash', 'telebirr', 'bank', 'chapa'];
+    public const METHODS = ['cash', 'telebirr', 'bank', 'chapa', 'deposit'];
 
     /** Methods a landlord can log by hand; chapa payments arrive by webhook (phase 2). */
     public const MANUAL_METHODS = ['cash', 'telebirr', 'bank'];

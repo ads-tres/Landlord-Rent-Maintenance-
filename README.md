@@ -251,6 +251,19 @@ The tenant pays; the money goes straight to the landlord's bank through Chapa sp
 - The quarterly report (JSON and PDF) adds `expenses_total`, `expenses_by_category`, per-property `expenses` and `net` (rent received minus expenses). It does not decide what is deductible; the PDF says to confirm that with an accountant.
 - The dashboard has `expenses_this_month`.
 
+## Move-out and deposit
+
+1. `POST /leases/{id}/move-out {moved_out_on, condition_notes?, keys_returned?}` starts the move-out (or returns the one already started). Every unpaid rent and utility charge up to the move-out month is listed as a deduction; rent for the move-out month is charged even if it isn't due yet.
+2. `PATCH /move-outs/{id}`, `POST /move-outs/{id}/photos` (up to 12 condition photos), `POST /move-outs/{id}/deductions {kind: damage|cleaning|keys|other, description, amount}`, `DELETE /move-out-deductions/{id}`. Unpaid-charge deductions can't be removed: they come from the deposit or stay owed.
+3. `POST /move-outs/{id}/settle {refund_method?, refund_reference?, notify_tenant?}`:
+   - Refreshes the unpaid charges, so payments made in the meantime count.
+   - The deposit pays unpaid rent and utilities first. This is recorded as a `deposit` payment, which can't be removed.
+   - Whatever is left covers the other deductions.
+   - Anything still left is refunded, and `refund_method` is required when there is a refund. Anything the deposit doesn't cover stays owed (`balance_owed`).
+   - Ends the lease and frees the unit.
+   - Texts the tenant a link to their statement at `/mo/{token}` (Amharic and English).
+4. `GET /move-outs/{id}/statement` returns the statement as a PDF. `POST /move-outs/{id}/send` texts the link again. Leases include `move_out {id, status}`.
+
 ## Telegram bot
 
 Optional and free: when someone has linked the bot, their messages go to Telegram instead of SMS.
