@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Api;
 
 use App\Models\Payment;
+use App\Support\DateDisplay;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -40,13 +41,30 @@ class StorePaymentRequest extends FormRequest
             'amount' => ['required', 'integer', 'min:100', 'max:1000000000'],
             'paid_at' => ['required', 'date_format:Y-m-d', 'before_or_equal:today'],
             'method' => ['required', Rule::in(Payment::MANUAL_METHODS)],
-            // Telebirr and bank payments carry a transaction reference; the same one can't be logged twice.
+            // Telebirr and bank payments carry a transaction reference; the same one can't be logged
+            // twice for the same channel (ignoring case, as references are often typed from an SMS).
             'reference' => [
                 Rule::requiredIf(fn () => $this->input('method') !== 'cash'),
                 'nullable', 'string', 'max:100',
-                Rule::unique('payments', 'reference')
-                    ->where('landlord_id', $landlordId)
-                    ->where('method', $this->input('method')),
+                function (string $attribute, mixed $value, \Closure $fail) use ($landlordId) {
+                    if (! is_string($value) || trim($value) === '') {
+                        return;
+                    }
+                    $existing = Payment::query()
+                        ->where('landlord_id', $landlordId)
+                        ->where('method', $this->input('method'))
+                        ->whereRaw('UPPER(reference) = ?', [mb_strtoupper(trim($value))])
+                        ->with('tenant')
+                        ->first();
+                    if ($existing) {
+                        $landlord = $this->user()->actingLandlord();
+                        $locale = app()->getLocale();
+                        $fail(__('payments.duplicate_reference', [
+                            'date' => DateDisplay::date($existing->paid_at, $locale, $landlord->calendar_pref ?: DateDisplay::GREGORIAN),
+                            'tenant' => $existing->tenant?->full_name ?? '—',
+                        ]));
+                    }
+                },
             ],
             'notes' => ['nullable', 'string', 'max:500'],
             'send_sms' => ['sometimes', 'boolean'],

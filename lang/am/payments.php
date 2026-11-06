@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'duplicate_reference' => 'ይህ ማጣቀሻ :date ለ:tenant አስቀድሞ ተመዝግቧል።',
     'exceeds_owed' => 'ይህ ውሉ ካለበት ዕዳ (የቀሩትን ወራት ጨምሮ) ይበልጣል። መመዝገብ የሚቻለው ከፍተኛ ብር :max ነው።',
     'cannot_void_online' => 'የኦንላይን እና ከተቀማጭ የተከፈሉ ክፍያዎች እዚህ ሊሰረዙ አይችሉም።',
     'methods' => [

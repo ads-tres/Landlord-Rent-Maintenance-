@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'duplicate_reference' => 'This reference was already logged on :date for :tenant.',
     'exceeds_owed' => 'This is more than the lease owes, including all remaining months. The most you can log is Br :max.',
     'cannot_void_online' => 'Online and deposit payments cannot be removed here.',
     'methods' => [
