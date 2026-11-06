@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\Lease;
+use App\Services\Leases\LeaseAgreement;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -27,7 +28,16 @@ class LeaseResource extends JsonResource
             'due_day' => $this->due_day,
             'due_calendar' => $this->due_calendar,
             'condition_notes' => $this->condition_notes,
+            'extra_terms' => $this->extra_terms,
             'registered_at' => $this->registered_at?->toDateString(),
+            'registration_number' => $this->registration_number,
+            'registration_office' => $this->registration_office,
+            'agreement_blanks' => $this->when(
+                $this->relationLoaded('tenant') && $this->relationLoaded('landlord') && $this->relationLoaded('unit'),
+                fn () => LeaseAgreement::blanks($this->resource),
+            ),
+            'documents' => $this->whenLoaded('attachments', fn () => $this->attachments
+                ->map(fn ($a) => ['id' => $a->id, 'url' => url("/api/v1/attachments/{$a->id}")])->values()),
             'status' => $this->status,
             'move_out' => $this->moveOut ? ['id' => $this->moveOut->id, 'status' => $this->moveOut->status] : null,
             'pay_url' => $this->status === Lease::STATUS_ACTIVE && $request->user()?->actingLandlord()->acceptsOnlineRent() ? $this->payUrl() : null,

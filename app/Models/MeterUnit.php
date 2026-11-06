@@ -17,6 +17,11 @@ class MeterUnit extends Model
         return ['share_percent' => 'float'];
     }
 
+    public function meter(): BelongsTo
+    {
+        return $this->belongsTo(Meter::class);
+    }
+
     public function unit(): BelongsTo
     {
         return $this->belongsTo(Unit::class);

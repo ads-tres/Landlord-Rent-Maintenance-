@@ -39,6 +39,7 @@ class LeaseController extends Controller
             'unit_id' => ['sometimes', 'integer'],
             'tenant_id' => ['sometimes', 'integer'],
             'ending_within_days' => ['sometimes', 'integer', 'between:1,365'],
+            'unregistered' => ['sometimes', 'boolean'],
         ]);
 
         $leases = Lease::query()
@@ -47,6 +48,7 @@ class LeaseController extends Controller
             ->when($request->input('unit_id'), fn (Builder $q, $id) => $q->where('unit_id', $id))
             ->when($request->input('tenant_id'), fn (Builder $q, $id) => $q->where('tenant_id', $id))
             ->when($request->input('ending_within_days'), fn (Builder $q, $days) => $q->endingWithin((int) $days))
+            ->when($request->boolean('unregistered'), fn (Builder $q) => $q->unregistered())
             ->orderBy('end_date')
             ->get();
 
@@ -200,7 +202,7 @@ class LeaseController extends Controller
     private function loadDetail(Lease $lease): Lease
     {
         return $lease
-            ->load(['unit.property', 'tenant', 'landlord', 'rentChanges'])
+            ->load(['unit.property', 'tenant', 'landlord', 'rentChanges', 'attachments'])
             ->loadSum('charges as charges_due_sum', 'amount_due')
             ->setAttribute('charges_paid_sum', (int) PaymentAllocation::query()
                 ->whereIn('charge_id', Charge::query()->select('id')->where('lease_id', $lease->id))
