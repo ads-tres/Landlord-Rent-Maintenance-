@@ -251,6 +251,26 @@ The tenant pays; the money goes straight to the landlord's bank through Chapa sp
 - The quarterly report (JSON and PDF) adds `expenses_total`, `expenses_by_category`, per-property `expenses` and `net` (rent received minus expenses). It does not decide what is deductible; the PDF says to confirm that with an accountant.
 - The dashboard has `expenses_this_month`.
 
+## Push notifications
+
+Landlord alerts go to the landlord's phone as push notifications through Firebase Cloud Messaging (HTTP v1), and also to Telegram if the landlord has linked it. These alerts are:
+- a new tenant repair
+- a payment logged by a caretaker
+- an online payment received
+- an equipment service due
+- a lease ending (60 and 30 days)
+- a new listing application, and the vacancy reminder
+
+**Setup:** in the Firebase console, create a project and generate a service account key (Project settings → Service accounts). Put the JSON file on the server and set `FCM_CREDENTIALS=/path/to/key.json`. Push stays off while this is unset. The backend signs the token request itself with openssl, so no Google SDK is needed.
+
+**Devices:**
+- The app registers its token with `POST /devices {token, platform}` after login, and removes it with `DELETE /devices {token}` on logout. A token moves to whichever account logs in on that phone.
+- Tokens that Firebase reports as unregistered are deleted automatically.
+
+**Each notification:** carries `data.route`, the app screen to open when tapped, and `data.kind`.
+
+**Settings:** users can switch push off with `PATCH /auth/me {push_enabled: false}`. `GET /auth/me` returns `push_available` and `push_enabled`.
+
 ## Excel export
 
 `GET /reports/quarterly?...&format=xlsx` downloads the quarter as a workbook for an accountant or the tax office. Landlord only. It is built with OpenSpout, which streams rows and uses little memory. Sheets:

@@ -21,4 +21,5 @@ return [
     'try_again' => 'እንደገና ይሞክሩ',
     'pending' => 'ቻፓ ክፍያውን እስኪያረጋግጥ እየጠበቅን ነው። አንድ ደቂቃ ሊወስድ ይችላል።',
     'check_again' => 'እንደገና ያረጋግጡ',
+    'landlord_paid' => ':tenant ለ:unit :amount በኦንላይን ከፍለዋል።',
 ];

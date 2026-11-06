@@ -27,13 +27,16 @@ class User extends Authenticatable
     /** Runs the pilot: admin panel only, never sees the landlord API data of others. */
     public const ROLE_ADMIN = 'admin';
 
-    protected $fillable = ['phone', 'name', 'email', 'locale', 'calendar_pref', 'sms_reminders', 'online_rent_enabled', 'role', 'is_pilot', 'phone_verified_at'];
+    protected $fillable = ['phone', 'name', 'email', 'locale', 'calendar_pref', 'sms_reminders', 'push_enabled', 'online_rent_enabled', 'role', 'is_pilot', 'phone_verified_at'];
+
+    protected $attributes = ['push_enabled' => true];
 
     protected function casts(): array
     {
         return [
             'phone_verified_at' => 'datetime',
             'sms_reminders' => 'boolean',
+            'push_enabled' => 'boolean',
             'is_pilot' => 'boolean',
             'online_rent_enabled' => 'boolean',
             'removed_at' => 'datetime',
@@ -67,6 +70,11 @@ class User extends Authenticatable
     public function team(): HasMany
     {
         return $this->hasMany(self::class, 'landlord_id')->where('role', self::ROLE_CARETAKER);
+    }
+
+    public function devices(): HasMany
+    {
+        return $this->hasMany(DeviceToken::class);
     }
 
     public function payoutAccount(): HasOne

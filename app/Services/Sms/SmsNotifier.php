@@ -8,6 +8,7 @@ use App\Models\SmsMessage;
 use App\Models\TelegramLink;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Services\Push\PushNotifier;
 use App\Services\Telegram\TelegramClient;
 use Illuminate\Database\Eloquent\Model;
 
@@ -31,11 +32,14 @@ class SmsNotifier
     }
 
     /**
-     * Landlord alerts (e.g. a new repair from a tenant) go only to Telegram: they are
-     * extras, not worth paying for by SMS. Returns null when the landlord hasn't linked.
+     * Landlord alerts (e.g. a new repair from a tenant) go to the landlord's phone as a push
+     * notification and to Telegram: they are extras, not worth paying for by SMS.
+     * Returns the Telegram message, or null when the landlord hasn't linked Telegram.
      */
     public function toLandlord(User $landlord, string $kind, string $body, ?Model $related = null): ?SmsMessage
     {
+        app(PushNotifier::class)->toUser($landlord, $kind, $body, $related);
+
         $link = $this->telegram->enabled() ? TelegramLink::activeFor($landlord) : null;
 
         return $link ? $this->queueTelegram($landlord->id, $link->chat_id, null, $kind, $body, $related) : null;

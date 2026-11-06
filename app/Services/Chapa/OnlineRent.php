@@ -4,9 +4,12 @@ namespace App\Services\Chapa;
 
 use App\Models\ChapaTransaction;
 use App\Models\Lease;
+use App\Models\SmsMessage;
 use App\Models\User;
 use App\Services\Payments\PaymentRecorder;
+use App\Services\Payments\ReceiptData;
 use App\Services\Payments\ReceiptNotifier;
+use App\Services\Sms\SmsNotifier;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -140,7 +143,14 @@ class OnlineRent
         });
 
         if ($payment) {
-            $this->receipts->send($payment, $landlord->locale ?: 'am');
+            $locale = $landlord->locale ?: 'am';
+            $this->receipts->send($payment, $locale);
+            $payment->loadMissing(['tenant' => fn ($q) => $q->withoutGlobalScopes(), 'lease' => fn ($q) => $q->withoutGlobalScopes()->with(['unit' => fn ($u) => $u->withoutGlobalScopes()])]);
+            app(SmsNotifier::class)->toLandlord($landlord, SmsMessage::KIND_ONLINE_PAYMENT, __('chapa.landlord_paid', [
+                'tenant' => $payment->tenant?->full_name,
+                'amount' => ReceiptData::birr($payment->amount, $locale),
+                'unit' => $payment->lease?->unit?->label,
+            ], $locale), $payment);
         }
 
         return $tx->refresh();
