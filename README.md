@@ -47,6 +47,7 @@ Tenant web pages ──────┘          │
 | Telegram bot: free messages with SMS fallback, repairs by photo or voice note, landlord alerts | ✅ |
 | Compound: shared meter bills, announcements, generator/tank/pump service reminders | ✅ |
 | Vacancy listings: share link, phone-verified applications, approve → tenant + draft lease | ✅ |
+| Online rent through Chapa (split payment to the landlord's bank) | ✅ built; sandbox testing needs Chapa keys |
 | Pilot with 10 landlords | ⏳ next |
 
 ## API (v1)
@@ -102,6 +103,9 @@ to localize messages.
 | GET | `/listings/{id}/applications` | Phone-verified applicants only |
 | PATCH | `/applications/{id}` | `{status: new\|shortlisted\|rejected\|approved}`. Approve creates or reuses the tenant, a **draft** lease at the asking rent, closes the listing and texts applicants |
 | POST | `/leases/{id}/activate` | Draft → active: `{condition_notes, start_date?, end_date?, deposit?, …}`. Occupies the unit and starts rent |
+| GET | `/chapa/banks` | Banks for the payout account form |
+| GET / PUT | `/payout-account` | `{bank_code, bank_name?, account_name, account_number}`. Creates the landlord's Chapa sub-account (number masked in responses, encrypted at rest) |
+| POST | `/leases/{id}/pay-link/send` | Texts the tenant their online pay link |
 | GET | `/rules` | `{rent_cap_percent, min_lease_years}` for checks in the app |
 
 **Amounts are integers in santim** (Br 150.00 = `15000`).
@@ -114,7 +118,8 @@ Phone numbers are accepted as `09…`, `07…`, `2519…` or `+2519…` and stor
 - One charge per month of the lease term: a lease from 2026-11-05 to 2028-11-04 has 24 charges.
 - Each charge is due on the lease's `due_day` (which defaults to the start day), clamped to the month's length.
 - Rent changes apply from their effective month. The cap (`settings.rent_cap_percent`) is stored with each change.
-- Scheduled jobs (`routes/console.php`): `rent:generate-charges` (daily 00:15) and `rent:mark-late` (daily 00:30).
+- Scheduled jobs (`routes/console.php`): `rent:generate-charges` (daily 00:15, creates charges due up to 5 days
+  ahead so the "due in 3 days" reminder works for rent due on the 1st) and `rent:mark-late` (daily 00:30).
   On the server, run `php artisan schedule:run` every minute from cron.
 - Periods follow the Gregorian calendar for now. Ethiopian-calendar due dates come with the calendar feature.
 
@@ -206,6 +211,33 @@ Phone numbers are accepted as `09…`, `07…`, `2519…` or `+2519…` and stor
   30 days (unverified ones after a day). It also reminds landlords at 3 and 5 months of vacancy
   (`units.vacant_since`, tracked on status changes), since over 6 months unrented is a violation under
   directive 7/2024.
+
+## Online rent (Chapa)
+
+The tenant pays; the money goes straight to the landlord's bank through Chapa split payments. We never hold it.
+
+1. The landlord adds a payout bank account (`PUT /payout-account` creates a Chapa sub-account with our flat
+   fee, `CHAPA_PLATFORM_FEE_SANTIM`, default Br 25), then turns on `online_rent_enabled`.
+2. Tenants get a pay link (`/pay/{token}`): in rent reminders, sent from the lease, or shared. The page shows
+   the balance and sends them to Chapa's checkout (Telebirr, CBE Birr, banks).
+3. A payment is recorded **only after `GET /transaction/verify/{tx_ref}` confirms success with the exact amount
+   and currency**. This runs from the webhook (`POST /api/chapa/webhook`, HMAC-SHA256 `x-chapa-signature`
+   checked first), the tenant's return page, and `chapa:reconcile` every 15 minutes. It is idempotent: the
+   tx_ref is the payment's `client_ref`.
+4. The payment is saved with `source = chapa` and allocated oldest first; the tenant gets the usual receipt.
+   Online payments can't be removed by hand.
+
+**Money flow:** the tenant pays the full amount. The landlord receives it minus our flat fee and Chapa's fee
+(reported at about 1.5%, minimum Br 5; confirm with Chapa). Settlement is reportedly two business days.
+
+**Sandbox checklist (before going live):**
+- [ ] Merchant account approved (trade license, TIN); test keys in `CHAPA_SECRET_KEY`
+- [ ] Webhook secret set in the Chapa dashboard and in `CHAPA_WEBHOOK_SECRET`; webhook URL `https://<domain>/api/chapa/webhook`
+- [ ] **Sub-account path:** Chapa's docs and packages disagree. Confirm `POST /subaccount` (else set
+      `CHAPA_SUBACCOUNT_PATH`) and that the response has `data.subaccount_id`
+- [ ] Bank codes from `GET /banks` work for sub-accounts
+- [ ] A test payment: checkout → webhook → verify → payment on the lease; the split shows our fee
+- [ ] Check the webhook signature header name and format against a real webhook
 
 ## Telegram bot
 

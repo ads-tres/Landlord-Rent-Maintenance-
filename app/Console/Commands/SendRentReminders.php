@@ -51,6 +51,9 @@ class SendRentReminders extends Command
                             'app' => config('app.name'),
                         ], $locale);
 
+                        if ($charge->landlord->acceptsOnlineRent() && $charge->lease->pay_token) {
+                            $body .= __('chapa.pay_online', ['url' => $charge->lease->payUrl()], $locale);
+                        }
                         $sms->toTenant($charge->lease->tenant, $kind, $body, $charge);
                         $sent++;
                     }

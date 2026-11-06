@@ -5,6 +5,7 @@ namespace App\Models;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -20,7 +21,7 @@ class User extends Authenticatable
     /** Runs the pilot: admin panel only, never sees the landlord API data of others. */
     public const ROLE_ADMIN = 'admin';
 
-    protected $fillable = ['phone', 'name', 'email', 'locale', 'calendar_pref', 'sms_reminders', 'role', 'is_pilot', 'phone_verified_at'];
+    protected $fillable = ['phone', 'name', 'email', 'locale', 'calendar_pref', 'sms_reminders', 'online_rent_enabled', 'role', 'is_pilot', 'phone_verified_at'];
 
     protected function casts(): array
     {
@@ -28,6 +29,7 @@ class User extends Authenticatable
             'phone_verified_at' => 'datetime',
             'sms_reminders' => 'boolean',
             'is_pilot' => 'boolean',
+            'online_rent_enabled' => 'boolean',
         ];
     }
 
@@ -38,6 +40,19 @@ class User extends Authenticatable
     public function landlordId(): int
     {
         return $this->id;
+    }
+
+    public function payoutAccount(): HasOne
+    {
+        return $this->hasOne(PayoutAccount::class, 'landlord_id')->withoutGlobalScopes();
+    }
+
+    /** Online rent works for this landlord: Chapa configured, payout account active, switched on. */
+    public function acceptsOnlineRent(): bool
+    {
+        return filled(config('chapa.secret_key'))
+            && $this->online_rent_enabled
+            && (bool) $this->payoutAccount?->isActive();
     }
 
     public function isAdmin(): bool

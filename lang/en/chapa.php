@@ -1,0 +1,24 @@
+<?php
+
+return [
+    'off' => 'Online rent is not set up yet.',
+    'unavailable' => 'Online payment is not available right now. Please try again later or pay your landlord directly.',
+    'bad_amount' => 'This amount cannot be paid online. It must be at least Br 1 and not more than what the lease still owes.',
+    'subaccount_failed' => 'Chapa could not set up this bank account. Check the bank and account number.',
+    'need_payout_account' => 'Add your bank account for payouts first.',
+    'sms_pay_link' => 'Pay rent for :unit online (Telebirr, CBE Birr, bank): :url - :app',
+    'pay_online' => ' Pay online: :url',
+    'page_title' => 'Pay rent',
+    'balance' => 'To pay now',
+    'due' => 'Next due :date',
+    'pay_amount' => 'Pay :amount',
+    'pay_month' => 'Pay one month (:amount)',
+    'nothing_due' => 'Nothing is due right now.',
+    'how' => 'You pay through Chapa with Telebirr, CBE Birr or your bank. The money goes to your landlord, and you get a receipt.',
+    'paid' => 'Payment received. Thank you!',
+    'see_receipt' => 'See receipt',
+    'failed' => 'The payment did not go through. No money was taken.',
+    'try_again' => 'Try again',
+    'pending' => 'We are waiting for Chapa to confirm the payment. This can take a minute.',
+    'check_again' => 'Check again',
+];

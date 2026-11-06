@@ -20,7 +20,7 @@ class PaymentRecorder
     public function __construct(private readonly RentSchedule $schedule) {}
 
     /**
-     * @param  array{amount: int, paid_at: string, method: string, reference?: ?string, notes?: ?string, client_ref?: ?string}  $data
+     * @param  array{amount: int, paid_at: string, method: string, reference?: ?string, notes?: ?string, client_ref?: ?string, source?: string}  $data
      */
     public function record(Lease $lease, array $data): Payment
     {
@@ -35,7 +35,7 @@ class PaymentRecorder
                 'method' => $data['method'],
                 'reference' => $data['reference'] ?? null,
                 'notes' => $data['notes'] ?? null,
-                'source' => 'manual',
+                'source' => $data['source'] ?? 'manual',
                 'receipt_token' => $this->newReceiptToken(),
                 'client_ref' => $data['client_ref'] ?? null,
             ]);

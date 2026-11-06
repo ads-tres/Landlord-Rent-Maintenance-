@@ -25,3 +25,6 @@ Schedule::command('assets:remind')->dailyAt('08:10')->withoutOverlapping()->onOn
 
 // Listings: expire after 30 days, delete old applications, remind about long vacancies.
 Schedule::command('listings:daily')->dailyAt('03:10')->withoutOverlapping()->onOneServer();
+
+// Chapa: catch payments whose webhook didn't arrive.
+Schedule::command('chapa:reconcile')->everyFifteenMinutes()->withoutOverlapping()->onOneServer();
