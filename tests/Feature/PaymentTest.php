@@ -122,6 +122,20 @@ class PaymentTest extends TestCase
         $this->pay(['reference' => 'TB123', 'method' => 'bank'])->assertCreated(); // different channel
     }
 
+    public function test_duplicate_reference_ignores_case_and_says_when_it_was_logged(): void
+    {
+        $this->lease->tenant->update(['full_name' => 'Almaz Tesfaye']);
+        $this->pay(['reference' => 'CKF1A2B3C4', 'paid_at' => '2026-11-10'])->assertCreated();
+
+        $this->pay(['reference' => ' ckf1a2b3c4 '])
+            ->assertUnprocessable()
+            ->assertJsonPath('errors.reference.0', 'This reference was already logged on 10 November 2026 for Almaz Tesfaye.');
+
+        // Sending the same offline payment again is still not a duplicate.
+        $this->pay(['reference' => 'FT26319ABCDE', 'client_ref' => 'phone-1'])->assertCreated();
+        $this->pay(['reference' => 'FT26319ABCDE', 'client_ref' => 'phone-1'])->assertOk();
+    }
+
     public function test_payment_date_cannot_be_in_the_future(): void
     {
         $this->pay(['paid_at' => '2026-11-16'])->assertUnprocessable()->assertJsonValidationErrors('paid_at');
