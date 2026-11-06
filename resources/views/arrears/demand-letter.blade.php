@@ -38,5 +38,6 @@
     <p class="muted">{{ __('arrears.letter.legal', [], $locale) }}</p>
 
     <div class="sign">{{ __('arrears.letter.signed', ['name' => $landlord], $locale) }}</div>
+    <div class="muted">{{ $landlordPhone }}@if ($landlordAddress) · {{ $landlordAddress }}@endif</div>
 </body>
 </html>

@@ -53,7 +53,7 @@ class LeaseAgreementTest extends TestCase
     {
         $c = $this->clauses();
 
-        $this->assertStringContainsString('Landlord: Abel Kebede, phone +251911000001, ID no. '.LeaseAgreement::BLANK, $c['The parties']);
+        $this->assertStringContainsString('Landlord: Abel Kebede, phone +251911000001, ID no. '.LeaseAgreement::BLANK.', address '.LeaseAgreement::BLANK, $c['The parties']);
         $this->assertStringContainsString('Tenant: Almaz Tesfaye, phone +251922000002, ID no. '.LeaseAgreement::BLANK.', address '.LeaseAgreement::BLANK, $c['The parties']);
         $this->assertStringContainsString('the home Room 1 (2 bedroom(s)) at Bole Compound (Bole, Woreda 03, house no. 1234)', $c['The home']);
         $this->assertStringContainsString('from 1 November 2026 (', $c['Term']);
@@ -66,6 +66,22 @@ class LeaseAgreementTest extends TestCase
         $this->assertStringContainsString('Freshly painted, new kitchen tap', $c['Condition of the home at the start']);
         $this->assertArrayNotHasKey('Additional terms', $c);
 
+        $this->getJson("/api/v1/leases/{$this->lease->id}")
+            ->assertJsonPath('data.agreement_blanks', ['landlord_id_number', 'tenant_address', 'tenant_id_number']);
+    }
+
+    public function test_landlord_profile_details_print_on_the_agreement(): void
+    {
+        $this->patchJson('/api/v1/auth/me', ['id_number' => 'AA-998877', 'address' => 'Bole, Woreda 03, house 55'])
+            ->assertOk()
+            ->assertJsonPath('data.id_number', 'AA-998877')
+            ->assertJsonPath('data.address', 'Bole, Woreda 03, house 55');
+        $this->assertNotSame('AA-998877', \DB::table('users')->where('id', $this->landlord->id)->value('id_number')); // encrypted
+
+        $this->assertStringContainsString(
+            'Landlord: Abel Kebede, phone +251911000001, ID no. AA-998877, address Bole, Woreda 03, house 55.',
+            $this->clauses()['The parties'],
+        );
         $this->getJson("/api/v1/leases/{$this->lease->id}")
             ->assertJsonPath('data.agreement_blanks', ['tenant_address', 'tenant_id_number']);
     }

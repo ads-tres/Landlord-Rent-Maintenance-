@@ -23,7 +23,7 @@ return [
     'clauses' => [
         'parties' => [
             'title' => 'The parties',
-            'text' => "This residential lease agreement is made between:\nLandlord: :landlord, phone :landlord_phone, ID no. :landlord_id.\nTenant: :tenant, phone :tenant_phone, ID no. :tenant_id, address :tenant_address.",
+            'text' => "This residential lease agreement is made between:\nLandlord: :landlord, phone :landlord_phone, ID no. :landlord_id, address :landlord_address.\nTenant: :tenant, phone :tenant_phone, ID no. :tenant_id, address :tenant_address.",
         ],
         'home' => [
             'title' => 'The home',

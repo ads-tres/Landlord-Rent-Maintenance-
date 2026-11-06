@@ -16,6 +16,8 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'phone' => $this->phone,
             'name' => $this->name,
+            'id_number' => $this->isCaretaker() ? null : $this->id_number,
+            'address' => $this->isCaretaker() ? null : $this->address,
             'locale' => $this->locale,
             'calendar_pref' => $this->calendar_pref,
             'sms_reminders' => (bool) $this->sms_reminders,

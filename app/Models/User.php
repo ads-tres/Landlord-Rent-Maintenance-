@@ -27,9 +27,11 @@ class User extends Authenticatable
     /** Runs the pilot: admin panel only, never sees the landlord API data of others. */
     public const ROLE_ADMIN = 'admin';
 
-    protected $fillable = ['phone', 'name', 'email', 'locale', 'calendar_pref', 'sms_reminders', 'push_enabled', 'online_rent_enabled', 'role', 'is_pilot', 'phone_verified_at'];
+    protected $fillable = ['phone', 'name', 'id_number', 'address', 'email', 'locale', 'calendar_pref', 'sms_reminders', 'push_enabled', 'online_rent_enabled', 'role', 'is_pilot', 'phone_verified_at'];
 
     protected $attributes = ['push_enabled' => true];
+
+    protected $hidden = ['id_number'];
 
     protected function casts(): array
     {
@@ -41,6 +43,7 @@ class User extends Authenticatable
             'online_rent_enabled' => 'boolean',
             'removed_at' => 'datetime',
             'onboarding_dismissed_at' => 'datetime',
+            'id_number' => 'encrypted',
         ];
     }
 

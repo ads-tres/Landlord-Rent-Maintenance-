@@ -24,6 +24,9 @@ class UpdateProfileRequest extends FormRequest
             'calendar_pref' => ['sometimes', 'in:ethiopian,gregorian'],
             'sms_reminders' => ['sometimes', 'boolean'],
             'push_enabled' => ['sometimes', 'boolean'],
+            // Printed on lease agreements and letters.
+            'id_number' => ['sometimes', 'nullable', 'string', 'max:40'],
+            'address' => ['sometimes', 'nullable', 'string', 'max:255'],
             // Online rent can only be switched on with an active payout account.
             'online_rent_enabled' => ['sometimes', 'boolean', function ($attribute, $value, $fail) {
                 if ($value && ! $this->user()->payoutAccount?->isActive()) {
