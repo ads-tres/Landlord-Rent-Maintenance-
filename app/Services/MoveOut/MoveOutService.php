@@ -6,6 +6,7 @@ use App\Models\Charge;
 use App\Models\Lease;
 use App\Models\MoveOut;
 use App\Models\MoveOutDeduction;
+use App\Models\PaymentAllocation;
 use App\Models\SmsMessage;
 use App\Services\Payments\PaymentRecorder;
 use App\Services\Payments\ReceiptData;
@@ -139,22 +140,97 @@ class MoveOutService
     public function totals(MoveOut $moveOut): array
     {
         $moveOut->loadMissing(['deductions', 'lease']);
-        $deposit = $moveOut->isSettled() ? $moveOut->deposit_held : (int) $moveOut->lease->deposit;
         $unpaid = (int) $moveOut->deductions->whereNotNull('charge_id')->sum('amount');
         $other = (int) $moveOut->deductions->whereNull('charge_id')->sum('amount');
 
-        $applied = min($deposit, $unpaid);
-        $kept = min($deposit - $applied, $other);
+        if ($moveOut->isSettled()) {
+            return [
+                'deposit' => $moveOut->deposit_held,
+                'unpaid' => $unpaid,
+                'other' => $other,
+                'prepaid' => $moveOut->prepaid,
+                'prepaid_to_unpaid' => $moveOut->prepaid_to_unpaid,
+                'applied' => $moveOut->deposit_applied,
+                'kept' => $moveOut->deposit_kept,
+                'refund' => $moveOut->refund_amount,
+                'balance' => $moveOut->balance_owed,
+            ];
+        }
+
+        $deposit = (int) $moveOut->lease->deposit;
+        // Rent already paid for months after the move-out first covers what is unpaid, then is refunded.
+        $prepaid = $this->prepaidAfter($moveOut);
+        $prepaidToUnpaid = min($prepaid, $unpaid);
+        $unpaidLeft = $unpaid - $prepaidToUnpaid;
+
+        $applied = min($deposit, $unpaidLeft);
+        $available = $deposit - $applied + ($prepaid - $prepaidToUnpaid);
+        $kept = min($available, $other);
 
         return [
             'deposit' => $deposit,
             'unpaid' => $unpaid,
             'other' => $other,
+            'prepaid' => $prepaid,
+            'prepaid_to_unpaid' => $prepaidToUnpaid,
             'applied' => $applied,
             'kept' => $kept,
-            'refund' => $deposit - $applied - $kept,
-            'balance' => ($unpaid - $applied) + ($other - $kept),
+            'refund' => $available - $kept,
+            'balance' => ($unpaidLeft - $applied) + ($other - $kept),
         ];
+    }
+
+    /** Money already allocated to charges for months after the move-out month. */
+    public function prepaidAfter(MoveOut $moveOut): int
+    {
+        return (int) PaymentAllocation::query()
+            ->whereHas('charge', fn ($q) => $q
+                ->where('lease_id', $moveOut->lease_id)
+                ->where('period', '>', $moveOut->moved_out_on->format('Y-m')))
+            ->sum('amount');
+    }
+
+    /**
+     * Moves money paid for months after the move-out onto unpaid charges up to the move-out
+     * month (oldest first). What is left over is refunded, so those payments no longer count
+     * toward the later months, which are then removed with the lease end.
+     */
+    private function releasePrepaid(MoveOut $moveOut): void
+    {
+        $period = $moveOut->moved_out_on->format('Y-m');
+        $freed = PaymentAllocation::query()
+            ->whereHas('charge', fn ($q) => $q->where('lease_id', $moveOut->lease_id)->where('period', '>', $period))
+            ->orderBy('id')
+            ->get();
+        if ($freed->isEmpty()) {
+            return;
+        }
+
+        $unpaid = Charge::query()
+            ->where('lease_id', $moveOut->lease_id)
+            ->where('period', '<=', $period)
+            ->where('status', '!=', Charge::STATUS_PAID)
+            ->orderBy('due_date')->orderBy('id')
+            ->get();
+        $touched = collect();
+
+        foreach ($freed as $allocation) {
+            $left = (int) $allocation->amount;
+            foreach ($unpaid as $charge) {
+                $owed = $charge->amount_due - $charge->amountPaid();
+                if ($left <= 0 || $owed <= 0) {
+                    continue;
+                }
+                $take = min($left, $owed);
+                PaymentAllocation::query()->create(['payment_id' => $allocation->payment_id, 'charge_id' => $charge->id, 'amount' => $take]);
+                $left -= $take;
+                $touched->push($charge);
+            }
+            $touched->push($allocation->charge);
+            $allocation->delete();
+        }
+
+        $touched->unique('id')->each(fn (Charge $c) => $c->refresh()->refreshStatus());
     }
 
     /** @param  array{refund_method?: ?string, refund_reference?: ?string}  $data */
@@ -171,6 +247,8 @@ class MoveOutService
             if ($t['refund'] > 0 && empty($data['refund_method'])) {
                 throw ValidationException::withMessages(['refund_method' => __('move_out.refund_method_required')]);
             }
+
+            $this->releasePrepaid($moveOut);
 
             if ($t['applied'] > 0) {
                 $this->payments->record($lease, [
@@ -189,6 +267,8 @@ class MoveOutService
                 'deposit_held' => $t['deposit'],
                 'deposit_applied' => $t['applied'],
                 'deposit_kept' => $t['kept'],
+                'prepaid' => $t['prepaid'],
+                'prepaid_to_unpaid' => $t['prepaid_to_unpaid'],
                 'refund_amount' => $t['refund'],
                 'balance_owed' => $t['balance'],
                 'refund_method' => $t['refund'] > 0 ? $data['refund_method'] : null,

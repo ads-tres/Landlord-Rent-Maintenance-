@@ -23,6 +23,9 @@
         @empty
             <tr><td class="muted">{{ __('move_out.statement.no_deductions', [], $l) }}</td><td></td></tr>
         @endforelse
+        @if ($s['prepaid_raw'] > 0)
+            <tr><td>{{ __('move_out.statement.prepaid', [], $l) }}</td><td class="right">+ {{ $s['prepaid'] }}</td></tr>
+        @endif
         <tr class="total"><td>{{ __('move_out.statement.refund', [], $l) }}</td><td class="right">{{ $s['refund'] }}</td></tr>
     </table>
 

@@ -16,6 +16,7 @@ return [
     'rent' => 'Rent for :period',
     'utility' => 'Utility share for :period (:meter)',
     'payment' => 'Payment (:method), receipt :receipt',
+    'prepaid_refund' => 'Rent paid in advance, refunded at move-out',
     'owed' => ':amount owed',
     'credit' => ':amount paid in advance',
     'none' => 'Nothing charged or paid in this period.',

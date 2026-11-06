@@ -354,6 +354,7 @@ By default it covers the whole lease up to today. The PDF can be shared with the
    - Anything still left is refunded, and `refund_method` is required when there is a refund. Anything the deposit doesn't cover stays owed (`balance_owed`).
    - Ends the lease and frees the unit.
    - Texts the tenant a link to their statement at `/mo/{token}` (Amharic and English).
+   - **Rent paid ahead:** any rent already paid for months after the move-out is credited back. It first covers unpaid charges up to the move-out month, by moving those payments' allocations onto the unpaid charges. The rest is added to the refund (`prepaid`, `prepaid_to_unpaid`). The later months are then removed with the lease end. The lease statement shows a "Rent paid in advance, refunded at move-out" line, so its balance comes back to zero. Reports still count the original payment as income, so subtract the refunded rent there by hand.
 4. `GET /move-outs/{id}/statement` returns the statement as a PDF. `POST /move-outs/{id}/send` texts the link again. Leases include `move_out {id, status}`.
 
 ## Tenant page (`/t/{token}`)

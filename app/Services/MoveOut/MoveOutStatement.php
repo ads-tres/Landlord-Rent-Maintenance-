@@ -35,6 +35,8 @@ class MoveOutStatement
                 'amount' => $birr($d->amount),
             ])->all(),
             'deductions_total' => $birr($t['unpaid'] + $t['other']),
+            'prepaid_raw' => $t['prepaid'],
+            'prepaid' => $birr($t['prepaid']),
             'refund' => $birr($t['refund']),
             'refund_raw' => $t['refund'],
             'balance' => $birr($t['balance']),

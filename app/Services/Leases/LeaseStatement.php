@@ -58,6 +58,20 @@ class LeaseStatement
                 'payment' => (int) $p->amount,
             ]));
 
+        // Rent paid ahead for after a move-out and refunded with the deposit.
+        $moveOut = $lease->moveOut()->first();
+        $refunded = $moveOut?->isSettled() ? $moveOut->prepaid - $moveOut->prepaid_to_unpaid : 0;
+        if ($refunded > 0 && $moveOut->settled_at->between($from->startOfDay(), $to->endOfDay())) {
+            $lines->push([
+                'date' => $moveOut->settled_at->toDateString(),
+                'order' => 2,
+                'kind' => 'refund',
+                'description' => __('statement.prepaid_refund', [], $locale),
+                'charge' => $refunded,
+                'payment' => 0,
+            ]);
+        }
+
         $balance = $opening;
         $rows = $lines->sortBy([['date', 'asc'], ['order', 'asc']])->values()->map(function ($l) use (&$balance, $date, $birr, $locale) {
             $balance += $l['charge'] - $l['payment'];

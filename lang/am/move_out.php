@@ -28,6 +28,7 @@ return [
         'landlord' => 'አከራይ',
         'deposit' => 'የተያዘ ተቀማጭ',
         'no_deductions' => 'ምንም ቅናሽ የለም',
+        'prepaid' => 'ከመልቀቂያው በኋላ ላሉት ወራት አስቀድሞ የተከፈለ ኪራይ',
         'refund' => 'ተመላሽ',
         'refunded_by' => 'በ:method ተመልሷል',
         'balance' => 'ተቀማጩ ሁሉንም አልሸፈነም፤ :amount አሁንም ይቀራል።',
