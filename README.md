@@ -375,6 +375,12 @@ The page stays open, read-only, for 90 days after the lease ends. Leases include
 - Receipts and rent reminders end with "Your account: {link}" when that doesn't cost an extra SMS segment. On Telegram the line is always added.
 - Tenants get their links when they agree to messages in the Telegram bot.
 
+## Messages to tenants
+
+- **Quiet hours:** no SMS or Telegram messages go to tenants between 21:00 and 07:00 Addis Ababa time. A message created during those hours is held (`send_after`) and goes out at 07:00.
+- **Opt-out:** tenants can opt out of rent and payment-plan reminders (`PATCH /tenants/{id} {reminders_opt_out}`). Receipts, notices and other messages still go out.
+- **Message log:** `GET /tenants/{id}/messages` lists everything sent to a tenant by SMS or Telegram, newest first, with its status, the error if it failed, and when it is scheduled to go out.
+
 ## Caretakers
 
 A landlord can invite up to 5 caretakers by phone number (`GET|POST /team`, `DELETE /team/{id}`).

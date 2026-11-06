@@ -29,6 +29,7 @@ use App\Http\Controllers\Api\V1\SignedAttachmentController;
 use App\Http\Controllers\Api\V1\TeamController;
 use App\Http\Controllers\Api\V1\TelegramLinkController;
 use App\Http\Controllers\Api\V1\TenantController;
+use App\Http\Controllers\Api\V1\TenantMessagesController;
 use App\Http\Controllers\Api\V1\TenantPrivacyController;
 use App\Http\Controllers\Api\V1\UnitController;
 use App\Http\Controllers\Api\V1\UnitListController;
@@ -66,6 +67,7 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('properties.units', UnitController::class)->shallow();
         Route::get('units', UnitListController::class);
         Route::apiResource('tenants', TenantController::class);
+        Route::get('tenants/{tenant}/messages', TenantMessagesController::class);
         Route::get('tenants/{tenant}/export', [TenantPrivacyController::class, 'export']);
         Route::post('tenants/{tenant}/anonymize', [TenantPrivacyController::class, 'anonymize']);
 
