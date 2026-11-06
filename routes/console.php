@@ -28,3 +28,6 @@ Schedule::command('listings:daily')->dailyAt('03:10')->withoutOverlapping()->onO
 
 // Chapa: catch payments whose webhook didn't arrive.
 Schedule::command('chapa:reconcile')->everyFifteenMinutes()->withoutOverlapping()->onOneServer();
+
+// Leases ending in 60 and 30 days: tell the landlord in time to agree a renewal.
+Schedule::command('leases:renewal-reminders')->dailyAt('09:10')->withoutOverlapping()->onOneServer();

@@ -19,6 +19,10 @@ class SmsMessage extends Model
 
     public const KIND_TEAM_INVITE = 'team_invite';
 
+    public const KIND_LEASE_RENEWED = 'lease_renewed';
+
+    public const KIND_RENEWAL_REMINDER = 'renewal_reminder';
+
     public const KIND_CARETAKER_PAYMENT = 'caretaker_payment';
 
     public const KIND_NEW_REPAIR = 'new_repair';

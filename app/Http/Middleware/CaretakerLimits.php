@@ -32,6 +32,7 @@ class CaretakerLimits
         V1\LeaseController::class.'@end',
         V1\LeaseController::class.'@rentChange',
         V1\LeaseController::class.'@activate',
+        V1\LeaseRenewalController::class.'@store',
         V1\MoveOutController::class.'@settle',
         V1\ListingController::class.'@store',
         V1\ListingController::class.'@update',

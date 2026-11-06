@@ -12,5 +12,6 @@ return [
     'move_out' => 'Your deposit statement for :unit: refund :refund. Details: :url - :app',
     'portal_link' => 'Your rent, receipts and repairs for :unit: :url - :app',
     'team_invite' => ':landlord added you as a caretaker on :app. Install the app and log in with this phone number.',
+    'lease_renewed' => 'Your lease for :unit is renewed until :date. Rent from :from: :rent. - :app',
     'announcement' => ':property: :body - :landlord',
 ];

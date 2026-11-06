@@ -130,6 +130,11 @@ class Lease extends Model
         return $this->hasOne(MoveOut::class);
     }
 
+    public function renewals(): HasMany
+    {
+        return $this->hasMany(LeaseRenewal::class);
+    }
+
     public function charges(): HasMany
     {
         return $this->hasMany(Charge::class);
