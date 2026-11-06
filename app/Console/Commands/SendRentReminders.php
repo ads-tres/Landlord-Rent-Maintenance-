@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Charge;
 use App\Models\SmsMessage;
 use App\Services\Payments\ReceiptData;
+use App\Services\Portal\PortalLink;
 use App\Services\Sms\SmsNotifier;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
@@ -54,6 +55,7 @@ class SendRentReminders extends Command
                         if ($charge->landlord->acceptsOnlineRent() && $charge->lease->pay_token) {
                             $body .= __('chapa.pay_online', ['url' => $charge->lease->payUrl()], $locale);
                         }
+                        $body = app(PortalLink::class)->append($charge->lease, $body, $locale);
                         $sms->toTenant($charge->lease->tenant, $kind, $body, $charge);
                         $sent++;
                     }

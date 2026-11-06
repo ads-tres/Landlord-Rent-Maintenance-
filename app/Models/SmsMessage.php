@@ -15,6 +15,8 @@ class SmsMessage extends Model
 
     public const KIND_MOVE_OUT = 'move_out';
 
+    public const KIND_PORTAL = 'portal_link';
+
     public const KIND_NEW_REPAIR = 'new_repair';
 
     public const KIND_UTILITY_BILL = 'utility_bill';

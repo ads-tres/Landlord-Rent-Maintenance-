@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'title' => 'Your rental',
+    'hello' => 'Hello :name',
+    'ended' => 'Your lease ended on :date. Your receipts stay here for a while.',
+    'overdue' => 'Overdue',
+    'balance' => 'Balance',
+    'all_paid' => 'All paid',
+    'due_on' => 'Due :date',
+    'rent_for' => 'Rent for :period',
+    'utility_share' => 'Utility share for :period',
+    'pay_online' => 'Pay online',
+    'statement' => 'Deposit statement',
+    'payments' => 'Payments',
+    'receipt' => 'Receipt',
+    'no_payments' => 'No payments yet.',
+    'repairs' => 'Repairs',
+    'no_repairs' => 'No repair requests.',
+    'announcements' => 'From your landlord',
+    'lease' => 'Lease',
+    'lease_dates' => 'Dates',
+    'monthly_rent' => 'Monthly rent',
+    'days_left' => 'Days left',
+    'landlord' => 'Landlord',
+    'private' => 'This page is only for you. Don\'t share the link.',
+    'sms_suffix' => ' Your account: :url',
+];
