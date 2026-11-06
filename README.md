@@ -46,6 +46,7 @@ Tenant web pages ──────┘          │
 | Pilot tools: admin panel, notebook import, pilot metrics, deployment kit | ✅ |
 | Telegram bot: free messages with SMS fallback, repairs by photo or voice note, landlord alerts | ✅ |
 | Compound: shared meter bills, announcements, generator/tank/pump service reminders | ✅ |
+| Vacancy listings: share link, phone-verified applications, approve → tenant + draft lease | ✅ |
 | Pilot with 10 landlords | ⏳ next |
 
 ## API (v1)
@@ -94,6 +95,13 @@ to localize messages.
 | GET / POST | `/properties/{id}/assets` | `{kind: generator\|water_tank\|pump\|other, name, service_interval_days, last_serviced_on?}` |
 | PATCH / DELETE | `/assets/{id}` | |
 | POST | `/assets/{id}/services` | `{serviced_on, cost?, notes?}`. The next service is due one interval later |
+| GET | `/listings` | The landlord's listings with verified application counts |
+| POST | `/units/{id}/listing` | `{asking_rent, available_from, description?}`. Vacant units only, one open listing per unit |
+| GET / PATCH | `/listings/{id}` | Includes `rent_check` (last rent, max allowed, `exceeds`), `share_text` (am/en) and photos. PATCH `status: live` publishes for 30 days, `closed` closes |
+| POST | `/listings/{id}/photos` | Up to 6 |
+| GET | `/listings/{id}/applications` | Phone-verified applicants only |
+| PATCH | `/applications/{id}` | `{status: new\|shortlisted\|rejected\|approved}`. Approve creates or reuses the tenant, a **draft** lease at the asking rent, closes the listing and texts applicants |
+| POST | `/leases/{id}/activate` | Draft → active: `{condition_notes, start_date?, end_date?, deposit?, …}`. Occupies the unit and starts rent |
 | GET | `/rules` | `{rent_cap_percent, min_lease_years}` for checks in the app |
 
 **Amounts are integers in santim** (Br 150.00 = `15000`).
@@ -183,6 +191,21 @@ Phone numbers are accepted as `09…`, `07…`, `2519…` or `+2519…` and stor
 - **Equipment:** generators, water tanks and pumps with a service interval and a service log.
   `assets:remind` (daily 08:10) tells landlords on Telegram about services due within 3 days, at most
   weekly per item, and the dashboard shows `services_due`.
+
+## Vacancy listings
+
+- Public page `/l/{slug}` (no search, shared by link): photos via 1-day signed links, rent, an application
+  form with a privacy notice and honeypot. Applicants confirm their phone with an SMS code before the landlord
+  sees them, and the landlord gets a Telegram alert.
+- **Rent rule:** the asking rent is compared with the last rent plus the yearly cap, as a warning.
+- **Scam control:**
+  - Only phone-verified landlords can publish.
+  - Listings expire after 30 days.
+  - Three reports suspend a listing (logged).
+- `listings:daily` (03:10) closes expired listings and deletes applications that weren't approved after
+  30 days (unverified ones after a day). It also reminds landlords at 3 and 5 months of vacancy
+  (`units.vacant_since`, tracked on status changes), since over 6 months unrented is a violation under
+  directive 7/2024.
 
 ## Telegram bot
 

@@ -19,6 +19,8 @@ class SmsMessage extends Model
 
     public const KIND_ANNOUNCEMENT = 'announcement';
 
+    public const KIND_LISTING = 'listing';
+
     public const KIND_REMINDER_BEFORE = 'reminder_before';
 
     public const KIND_REMINDER_DUE = 'reminder_due';

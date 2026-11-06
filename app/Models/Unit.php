@@ -24,7 +24,32 @@ class Unit extends Model
 
     protected function casts(): array
     {
-        return ['bedrooms' => 'integer'];
+        return ['bedrooms' => 'integer', 'vacant_since' => 'datetime', 'vacancy_reminded_months' => 'integer'];
+    }
+
+    protected static function booted(): void
+    {
+        // Track how long a unit has been empty (for the 6-month vacancy rule).
+        static::saving(function (Unit $unit) {
+            if ($unit->isDirty('status') || ! $unit->exists) {
+                if ($unit->status === self::STATUS_VACANT) {
+                    $unit->vacant_since ??= now();
+                } else {
+                    $unit->vacant_since = null;
+                    $unit->vacancy_reminded_months = 0;
+                }
+            }
+        });
+    }
+
+    public function listings(): HasMany
+    {
+        return $this->hasMany(Listing::class);
+    }
+
+    public function openListing(): HasOne
+    {
+        return $this->hasOne(Listing::class)->whereIn('status', [Listing::STATUS_DRAFT, Listing::STATUS_LIVE, Listing::STATUS_SUSPENDED])->latestOfMany();
     }
 
     public function property(): BelongsTo

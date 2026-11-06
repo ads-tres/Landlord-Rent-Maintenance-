@@ -6,4 +6,5 @@ return [
     'not_active' => 'This lease is not active.',
     'rent_unchanged' => 'The new rent is the same as the current rent.',
     'above_cap' => 'This increase is above the :cap% yearly cap. The most you can charge is Br :max.',
+    'not_draft' => 'Only a draft lease can be activated.',
 ];

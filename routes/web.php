@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Web\ListingPageController;
 use App\Http\Controllers\Web\ReceiptController;
 use App\Http\Controllers\Web\RepairPageController;
 use App\Http\Controllers\Web\WaitlistController;
@@ -51,4 +52,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('settings', [AdminController::class, 'settings'])->name('settings');
         Route::put('settings', [AdminController::class, 'updateSettings'])->name('settings.update');
     });
+});
+
+// Public vacancy listings, shared by link (no public search).
+Route::prefix('l/{slug}')->where(['slug' => '[a-z0-9]{8}'])->name('listings.public.')->group(function () {
+    Route::get('/', [ListingPageController::class, 'show'])->middleware('throttle:120,1')->name('show');
+    Route::post('apply', [ListingPageController::class, 'apply'])->middleware('throttle:5,60')->name('apply');
+    Route::get('verify', [ListingPageController::class, 'showVerify'])->name('verify');
+    Route::post('verify', [ListingPageController::class, 'verify'])->middleware('throttle:10,10')->name('verify.submit');
+    Route::post('report', [ListingPageController::class, 'report'])->middleware('throttle:3,60')->name('report');
 });
