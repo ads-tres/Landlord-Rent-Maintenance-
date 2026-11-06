@@ -11,6 +11,7 @@ return [
     'period' => 'Period',
     'landlord' => 'Landlord',
     'income' => 'Rent received (Br)',
+    'refunded' => 'Rent refunded (Br)',
     'expenses' => 'Expenses (Br)',
     'net' => 'Net (Br)',
     'by_property' => 'By property',

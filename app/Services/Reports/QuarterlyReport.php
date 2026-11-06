@@ -4,6 +4,7 @@ namespace App\Services\Reports;
 
 use App\Models\Expense;
 use App\Models\Payment;
+use App\Models\RentRefund;
 use App\Support\DateDisplay;
 use App\Support\EthiopianDate;
 use Carbon\CarbonImmutable;
@@ -69,6 +70,11 @@ class QuarterlyReport
             ->with('property:id,name')
             ->whereBetween('spent_on', [$from->toDateString(), $to->toDateString()])
             ->get();
+        $refunds = RentRefund::query()
+            ->with('lease.unit.property')
+            ->whereBetween('refunded_on', [$from->toDateString(), $to->toDateString()])
+            ->get();
+        $refunded = (int) $refunds->sum('amount');
         $income = (int) $payments->sum('amount');
         $spent = (int) $expenses->sum('amount');
 
@@ -101,7 +107,10 @@ class QuarterlyReport
             // Costs recorded in the app. Whether each one is deductible is for an accountant to confirm.
             'expenses_total' => $spent,
             'expenses_count' => $expenses->count(),
-            'net' => $income - $spent,
+            // Rent given back in the quarter (e.g. paid ahead for after a move-out).
+            'refunded' => $refunded,
+            'net_rent' => $income - $refunded,
+            'net' => $income - $refunded - $spent,
             'expenses_by_category' => $expenses->groupBy('category')
                 ->map(fn ($group, $category) => [
                     'category' => $category,
@@ -120,6 +129,7 @@ class QuarterlyReport
                     'property' => $name,
                     'total' => (int) $group->sum('amount'),
                     'expenses' => (int) $expenses->filter(fn (Expense $e) => $e->property?->name === $name)->sum('amount'),
+                    'refunded' => (int) $refunds->filter(fn (RentRefund $r) => $r->lease?->unit?->property?->name === $name)->sum('amount'),
                     'units' => $group->groupBy(fn (Payment $p) => $p->lease?->unit?->label ?? '—')
                         ->map(fn ($g, $label) => ['unit' => $label, 'total' => (int) $g->sum('amount'), 'count' => $g->count()])
                         ->sortKeys(SORT_NATURAL)->values()->all(),

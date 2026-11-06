@@ -52,6 +52,9 @@
     <h2>{{ __('reports.net') }}</h2>
     <table>
         <tr><td>{{ __('reports.total') }}</td><td class="right">{{ $birr($r['total']) }}</td></tr>
+        @if ($r['refunded'] > 0)
+            <tr><td>{{ __('reports.refunded') }}</td><td class="right">− {{ $birr($r['refunded']) }}</td></tr>
+        @endif
         <tr><td>{{ __('reports.expenses_total') }}</td><td class="right">− {{ $birr($r['expenses_total']) }}</td></tr>
         <tr><td class="strong">{{ __('reports.net') }}</td><td class="right strong">{{ $r['net'] < 0 ? '− ' : '' }}{{ $birr(abs($r['net'])) }}</td></tr>
     </table>
