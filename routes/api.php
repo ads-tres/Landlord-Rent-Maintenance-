@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\V1\ExpenseController;
 use App\Http\Controllers\Api\V1\LeaseAgreementController;
 use App\Http\Controllers\Api\V1\LeaseController;
 use App\Http\Controllers\Api\V1\LeaseRenewalController;
+use App\Http\Controllers\Api\V1\LeaseStatementController;
 use App\Http\Controllers\Api\V1\ListingController;
 use App\Http\Controllers\Api\V1\MaintenanceController;
 use App\Http\Controllers\Api\V1\MeterController;
@@ -69,6 +70,7 @@ Route::prefix('v1')->group(function () {
         Route::post('leases/{lease}/end', [LeaseController::class, 'end']);
         Route::post('leases/{lease}/rent-change', [LeaseController::class, 'rentChange']);
         Route::post('leases/{lease}/activate', [LeaseController::class, 'activate']);
+        Route::get('leases/{lease}/statement', LeaseStatementController::class);
         Route::get('leases/{lease}/agreement', [LeaseAgreementController::class, 'show']);
         Route::put('leases/{lease}/extra-terms', [LeaseAgreementController::class, 'terms']);
         Route::put('leases/{lease}/registration', [LeaseAgreementController::class, 'register']);
