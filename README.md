@@ -282,6 +282,25 @@ The page stays open, read-only, for 90 days after the lease ends. Leases include
 - Receipts and rent reminders end with "Your account: {link}" when that doesn't cost an extra SMS segment. On Telegram the line is always added.
 - Tenants get their links when they agree to messages in the Telegram bot.
 
+## Caretakers
+
+A landlord can invite up to 5 caretakers by phone number (`GET|POST /team`, `DELETE /team/{id}`).
+
+- **Login:** a caretaker logs in with their own SMS code. They work on the landlord's data because `User::landlordId()` returns the employer's id, so the global scope and the policies apply unchanged.
+- **Landlord-only actions:** `CaretakerLimits::LANDLORD_ONLY` lists them. A caretaker gets a 403 on:
+  - reports and expenses
+  - payout account and online rent
+  - team and Telegram link
+  - creating or deleting properties and units
+  - tenant delete, export and anonymize
+  - lease create, end, rent change and activate
+  - move-out settle
+  - listings
+  - voiding payments and deleting meters, bills or equipment
+- **Settings:** caretakers can't change rent reminders or online rent.
+- **Attribution:** payments store `recorded_by` and repairs store `handled_by`. Resources show `recorded_by_name` and `handled_by_name` when a caretaker did it. Landlords on Telegram are told about payments their caretaker logs.
+- **Removing a caretaker:** signs them out on every device and blocks their login. Inviting them again restores access.
+
 ## Telegram bot
 
 Optional and free: when someone has linked the bot, their messages go to Telegram instead of SMS.

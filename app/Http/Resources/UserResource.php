@@ -19,8 +19,9 @@ class UserResource extends JsonResource
             'calendar_pref' => $this->calendar_pref,
             'sms_reminders' => (bool) $this->sms_reminders,
             'role' => $this->role,
+            'landlord_name' => $this->isCaretaker() ? ($this->employer?->name ?: $this->employer?->phone) : null,
             'online_rent_available' => filled(config('chapa.secret_key')),
-            'online_rent_enabled' => $this->acceptsOnlineRent(),
+            'online_rent_enabled' => $this->actingLandlord()->acceptsOnlineRent(),
             'telegram_linked' => $this->telegramLink()->exists(),
             'telegram_available' => filled(config('telegram.token')) && filled(config('telegram.username')),
         ];

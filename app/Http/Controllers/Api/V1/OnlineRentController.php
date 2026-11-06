@@ -71,7 +71,7 @@ class OnlineRentController extends Controller
     public function sendPayLink(Request $request, Lease $lease, SmsNotifier $sms): JsonResponse
     {
         Gate::authorize('update', $lease);
-        abort_unless($lease->status === Lease::STATUS_ACTIVE && $request->user()->acceptsOnlineRent(), 409, __('chapa.off'));
+        abort_unless($lease->status === Lease::STATUS_ACTIVE && $request->user()->actingLandlord()->acceptsOnlineRent(), 409, __('chapa.off'));
 
         $lease->loadMissing(['tenant', 'unit']);
         $locale = $request->user()->locale ?: 'am';

@@ -66,7 +66,18 @@ class PaymentController extends Controller
         $data = $request->validated();
         $lease = Lease::query()->with(['tenant', 'unit'])->findOrFail($data['lease_id']);
 
-        $payment = $this->recorder->record($lease, $data);
+        $user = $request->user();
+        $payment = $this->recorder->record($lease, $data + ['recorded_by' => $user->id]);
+
+        // Landlords on Telegram hear about payments their caretaker logs.
+        if ($user->isCaretaker()) {
+            app(SmsNotifier::class)->toLandlord($user->actingLandlord(), SmsMessage::KIND_CARETAKER_PAYMENT, __('team.payment_alert', [
+                'name' => $user->name ?: $user->phone,
+                'amount' => ReceiptData::birr($payment->amount, $user->actingLandlord()->locale ?: 'am'),
+                'tenant' => $lease->tenant->full_name,
+                'unit' => $lease->unit->label,
+            ], $user->actingLandlord()->locale ?: 'am'), $payment);
+        }
 
         if ($request->boolean('send_sms', true)) {
             $message = $this->queueReceiptSms($payment, $request->user()->locale);

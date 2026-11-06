@@ -26,6 +26,8 @@ class PaymentResource extends JsonResource
             'reference' => $this->reference,
             'notes' => $this->notes,
             'source' => $this->source,
+            // Who logged it, when that was a caretaker (null for the landlord or online payments).
+            'recorded_by_name' => $this->recorded_by && $this->recorded_by !== $this->landlord_id ? $this->recordedBy?->name : null,
             'client_ref' => $this->client_ref,
             'receipt_url' => $this->receipt_token ? $this->receiptUrl() : null,
             'tenant_name' => $this->whenLoaded('tenant', fn () => $this->tenant->full_name),

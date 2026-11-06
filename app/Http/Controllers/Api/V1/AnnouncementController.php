@@ -28,7 +28,7 @@ class AnnouncementController extends Controller
         Gate::authorize('update', $property);
         $body = $request->validate(['body' => ['required', 'string', 'max:300']])['body'];
 
-        return response()->json(['data' => $this->announcements->preview($property, $body, $request->user())]);
+        return response()->json(['data' => $this->announcements->preview($property, $body, $request->user()->actingLandlord())]);
     }
 
     /** POST /properties/{id}/announcements — sends it. */
@@ -37,7 +37,7 @@ class AnnouncementController extends Controller
         Gate::authorize('update', $property);
         $body = $request->validate(['body' => ['required', 'string', 'max:300']])['body'];
 
-        $announcement = $this->announcements->send($property, $body, $request->user());
+        $announcement = $this->announcements->send($property, $body, $request->user()->actingLandlord());
 
         return response()->json(['data' => $announcement->only(['id', 'body', 'telegram_count', 'sms_count', 'sms_segments', 'created_at'])], 201);
     }

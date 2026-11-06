@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
@@ -18,6 +19,11 @@ class User extends Authenticatable
 
     public const ROLE_LANDLORD = 'landlord';
 
+    /** Works on a landlord's data with limited rights (logs payments, handles repairs). */
+    public const ROLE_CARETAKER = 'caretaker';
+
+    public const MAX_CARETAKERS = 5;
+
     /** Runs the pilot: admin panel only, never sees the landlord API data of others. */
     public const ROLE_ADMIN = 'admin';
 
@@ -30,16 +36,37 @@ class User extends Authenticatable
             'sms_reminders' => 'boolean',
             'is_pilot' => 'boolean',
             'online_rent_enabled' => 'boolean',
+            'removed_at' => 'datetime',
         ];
     }
 
-    /**
-     * The landlord whose data this user works on. Today every user is a
-     * landlord; managers and caretakers will map to their landlord later.
-     */
+    /** The landlord whose data this user works on: themself, or the employer for a caretaker. */
     public function landlordId(): int
     {
-        return $this->id;
+        return $this->landlord_id ?? $this->id;
+    }
+
+    public function isCaretaker(): bool
+    {
+        return $this->role === self::ROLE_CARETAKER;
+    }
+
+    /** The landlord a caretaker works for. */
+    public function employer(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'landlord_id');
+    }
+
+    /** The landlord in whose name this user acts (settings, online rent, sender name). */
+    public function actingLandlord(): self
+    {
+        return $this->isCaretaker() && $this->employer ? $this->employer : $this;
+    }
+
+    /** A landlord's caretakers. */
+    public function team(): HasMany
+    {
+        return $this->hasMany(self::class, 'landlord_id')->where('role', self::ROLE_CARETAKER);
     }
 
     public function payoutAccount(): HasOne

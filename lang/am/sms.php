@@ -11,5 +11,6 @@ return [
     'utility_bill' => 'የ:period የ:kind ሂሳብ ድርሻዎ፦ ለ:unit :amount፣ የሚከፈልበት :date። - :app',
     'move_out' => 'የ:unit የተቀማጭ ሂሳብ መግለጫ፦ ተመላሽ :refund። ዝርዝር፦ :url - :app',
     'portal_link' => 'የ:unit ኪራይ፣ ደረሰኞች እና ጥገናዎች፦ :url - :app',
+    'team_invite' => ':landlord በ:app ላይ እንደ ጠባቂ አክለውዎታል። መተግበሪያውን ጭነው በዚህ ስልክ ቁጥር ይግቡ።',
     'announcement' => ':property፦ :body - :landlord',
 ];

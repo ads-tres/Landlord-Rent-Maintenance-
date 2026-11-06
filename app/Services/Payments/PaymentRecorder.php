@@ -40,6 +40,7 @@ class PaymentRecorder
                 'client_ref' => $data['client_ref'] ?? null,
             ]);
             $payment->landlord_id = $lease->landlord_id;
+            $payment->recorded_by = $data['recorded_by'] ?? null;
             $payment->save();
 
             $remaining = (int) $data['amount'];

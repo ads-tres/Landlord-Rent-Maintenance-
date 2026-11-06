@@ -38,6 +38,11 @@ class AuthController extends Controller
             throw ValidationException::withMessages(['code' => __('auth.otp_invalid')]);
         }
 
+        $existing = User::query()->where('phone', $phone)->first();
+        if ($existing?->isCaretaker() && ($existing->removed_at || ! $existing->landlord_id)) {
+            abort(403, __('team.removed'));
+        }
+
         $user = User::query()->firstOrCreate(
             ['phone' => $phone],
             ['role' => User::ROLE_LANDLORD, 'locale' => $request->validated('locale', 'am')],
