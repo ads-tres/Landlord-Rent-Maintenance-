@@ -184,6 +184,10 @@ class TelegramBot
         if ($data === 'consent:yes') {
             (clone $tenantLinks)->whereNull('consented_at')->update(['consented_at' => now()]);
             $this->reply($chatId, __('telegram.agreed', [], $locale), ['reply_markup' => ['remove_keyboard' => true]]);
+            $links = $this->activeLeases($chatId)->map(fn (Lease $l) => $l->unit?->label.': '.$l->portalUrl())->filter()->implode("\n");
+            if ($links !== '') {
+                $this->reply($chatId, __('telegram.portal_links', ['links' => $links], $locale));
+            }
         } elseif ($data === 'consent:no') {
             (clone $tenantLinks)->whereNull('consented_at')->delete();
             $this->reply($chatId, __('telegram.declined', [], $locale), ['reply_markup' => ['remove_keyboard' => true]]);

@@ -31,6 +31,7 @@ class LeaseResource extends JsonResource
             'status' => $this->status,
             'move_out' => $this->moveOut ? ['id' => $this->moveOut->id, 'status' => $this->moveOut->status] : null,
             'pay_url' => $this->status === Lease::STATUS_ACTIVE && $request->user()?->acceptsOnlineRent() ? $this->payUrl() : null,
+            'portal_url' => $this->portalUrl(),
             'repair_url' => $this->status === Lease::STATUS_ACTIVE ? $this->repairUrl() : null,
             'days_until_end' => $this->status === Lease::STATUS_ACTIVE
                 ? (int) today()->diffInDays($this->end_date, false)

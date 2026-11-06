@@ -7,6 +7,7 @@ use App\Http\Controllers\Web\MoveOutStatementController;
 use App\Http\Controllers\Web\PayPageController;
 use App\Http\Controllers\Web\ReceiptController;
 use App\Http\Controllers\Web\RepairPageController;
+use App\Http\Controllers\Web\TenantPortalController;
 use App\Http\Controllers\Web\WaitlistController;
 use App\Http\Middleware\EnsureAdmin;
 use Illuminate\Support\Facades\Route;
@@ -22,6 +23,12 @@ Route::get('/r/{token}', [ReceiptController::class, 'show'])
     ->where('token', '[a-z0-9]{10}')
     ->middleware('throttle:60,1')
     ->name('receipts.show');
+
+// The tenant's own page: balance, payments, repairs, announcements.
+Route::get('/t/{token}', [TenantPortalController::class, 'show'])
+    ->where('token', '[a-z0-9]{10}')
+    ->middleware('throttle:60,1')
+    ->name('portal.show');
 
 // Tenant deposit statement linked from the move-out SMS.
 Route::get('/mo/{token}', [MoveOutStatementController::class, 'show'])

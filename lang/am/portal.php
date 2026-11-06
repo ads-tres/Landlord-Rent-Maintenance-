@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'title' => 'የእርስዎ ኪራይ',
+    'hello' => 'ሰላም :name',
+    'ended' => 'ውልዎ :date አብቅቷል። ደረሰኞችዎ ለተወሰነ ጊዜ እዚህ ይቆያሉ።',
+    'overdue' => 'ያለፈበት',
+    'balance' => 'ቀሪ ሂሳብ',
+    'all_paid' => 'ሁሉም ተከፍሏል',
+    'due_on' => 'የሚከፈልበት :date',
+    'rent_for' => 'የ:period ኪራይ',
+    'utility_share' => 'የ:period የአገልግሎት ድርሻ',
+    'pay_online' => 'በኦንላይን ይክፈሉ',
+    'statement' => 'የተቀማጭ ሂሳብ መግለጫ',
+    'payments' => 'ክፍያዎች',
+    'receipt' => 'ደረሰኝ',
+    'no_payments' => 'እስካሁን ክፍያ የለም።',
+    'repairs' => 'ጥገናዎች',
+    'no_repairs' => 'የጥገና ጥያቄ የለም።',
+    'announcements' => 'ከአከራይዎ',
+    'lease' => 'ውል',
+    'lease_dates' => 'ቀናት',
+    'monthly_rent' => 'ወርሃዊ ኪራይ',
+    'days_left' => 'የቀሩ ቀናት',
+    'landlord' => 'አከራይ',
+    'private' => 'ይህ ገጽ ለእርስዎ ብቻ ነው። ሊንኩን ለሌላ አያጋሩ።',
+    'sms_suffix' => ' ሂሳብዎ፦ :url',
+];

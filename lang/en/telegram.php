@@ -22,4 +22,5 @@ return [
     'stopped' => "Stopped. You'll get SMS again. Send /start to connect again.",
     'help' => "Commands:\n/repair: report a repair\n/stop: stop Telegram messages (back to SMS)",
     'new_repair' => 'New repair at :unit: :title. Open :app to see it.',
+    'portal_links' => "Your page with rent, receipts and repairs:\n:links",
 ];

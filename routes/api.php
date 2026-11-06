@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\V1\MeterController;
 use App\Http\Controllers\Api\V1\MoveOutController;
 use App\Http\Controllers\Api\V1\OnlineRentController;
 use App\Http\Controllers\Api\V1\PaymentController;
+use App\Http\Controllers\Api\V1\PortalLinkController;
 use App\Http\Controllers\Api\V1\PropertyController;
 use App\Http\Controllers\Api\V1\RepairLinkController;
 use App\Http\Controllers\Api\V1\ReportController;
@@ -95,6 +96,8 @@ Route::prefix('v1')->group(function () {
         Route::get('attachments/{attachment}', [AttachmentController::class, 'show']);
         Route::post('leases/{lease}/repair-link/send', [RepairLinkController::class, 'send']);
         Route::post('leases/{lease}/repair-link/reset', [RepairLinkController::class, 'reset']);
+        Route::post('leases/{lease}/portal-link/send', [PortalLinkController::class, 'send']);
+        Route::post('leases/{lease}/portal-link/reset', [PortalLinkController::class, 'reset']);
 
         Route::apiResource('properties.meters', MeterController::class)->shallow();
         Route::get('meters/{meter}/bills', [UtilityBillController::class, 'index']);

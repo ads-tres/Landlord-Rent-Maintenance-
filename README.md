@@ -264,6 +264,24 @@ The tenant pays; the money goes straight to the landlord's bank through Chapa sp
    - Texts the tenant a link to their statement at `/mo/{token}` (Amharic and English).
 4. `GET /move-outs/{id}/statement` returns the statement as a PDF. `POST /move-outs/{id}/send` texts the link again. Leases include `move_out {id, status}`.
 
+## Tenant page (`/t/{token}`)
+
+Each lease has a private page for the tenant. It needs no login and no scripts, and is under 100 KB, so it works on basic phones. It is in Amharic and English. The page shows:
+- the overdue balance and the next amount due. If next month's charge hasn't been created yet, it's worked out from the schedule.
+- the last 12 payments, each with a receipt link
+- recent repairs, plus a form to report one. The form posts to `/fix/{repair_token}` with `back=portal`, so the tenant lands back on the page.
+- announcements from the last 90 days
+- lease dates and the landlord's phone
+- a **Pay online** button when the landlord accepts online rent
+- the deposit statement after move-out
+
+The page stays open, read-only, for 90 days after the lease ends. Leases include `portal_url`, which is null once the page has closed.
+
+- `POST /leases/{id}/portal-link/send` texts the link to the tenant.
+- `POST /leases/{id}/portal-link/reset` replaces it, and the old link stops working.
+- Receipts and rent reminders end with "Your account: {link}" when that doesn't cost an extra SMS segment. On Telegram the line is always added.
+- Tenants get their links when they agree to messages in the Telegram bot.
+
 ## Telegram bot
 
 Optional and free: when someone has linked the bot, their messages go to Telegram instead of SMS.

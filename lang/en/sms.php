@@ -10,5 +10,6 @@ return [
     'repair_link' => 'To report a repair for :unit, open :url - :app',
     'utility_bill' => 'Your share of the :kind bill for :period: :amount for :unit, due :date. - :app',
     'move_out' => 'Your deposit statement for :unit: refund :refund. Details: :url - :app',
+    'portal_link' => 'Your rent, receipts and repairs for :unit: :url - :app',
     'announcement' => ':property: :body - :landlord',
 ];

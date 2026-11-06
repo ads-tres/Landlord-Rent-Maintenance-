@@ -23,7 +23,7 @@ class Lease extends Model
 
     protected $fillable = [
         'unit_id', 'tenant_id', 'start_date', 'end_date', 'terminated_on', 'monthly_rent', 'deposit',
-        'due_day', 'due_calendar', 'condition_notes', 'registered_at', 'status', 'repair_token', 'pay_token',
+        'due_day', 'due_calendar', 'condition_notes', 'registered_at', 'status', 'repair_token', 'pay_token', 'portal_token',
     ];
 
     protected $attributes = [
@@ -51,6 +51,7 @@ class Lease extends Model
         static::creating(function (Lease $lease) {
             $lease->repair_token ??= static::newRepairToken();
             $lease->pay_token ??= static::newRepairToken();
+            $lease->portal_token ??= static::newRepairToken();
         });
     }
 
@@ -58,7 +59,9 @@ class Lease extends Model
     {
         do {
             $token = Str::lower(Str::random(10));
-        } while (static::query()->withoutGlobalScopes()->where('repair_token', $token)->exists());
+        } while (static::query()->withoutGlobalScopes()
+            ->where(fn ($q) => $q->where('repair_token', $token)->orWhere('pay_token', $token)->orWhere('portal_token', $token))
+            ->exists());
 
         return $token;
     }
@@ -66,6 +69,28 @@ class Lease extends Model
     public function repairUrl(): ?string
     {
         return $this->repair_token ? route('repairs.public.show', $this->repair_token) : null;
+    }
+
+    /** Days after a lease ends that the tenant page stays open (read-only) for receipts and the statement. */
+    public const PORTAL_DAYS_AFTER_END = 90;
+
+    /** The tenant's own page: balance, payments, repairs, announcements. Null once it has closed. */
+    public function portalUrl(): ?string
+    {
+        return $this->portal_token && $this->portalOpen() ? route('portal.show', $this->portal_token) : null;
+    }
+
+    public function portalOpen(): bool
+    {
+        if ($this->status === self::STATUS_ACTIVE) {
+            return true;
+        }
+        if ($this->status !== self::STATUS_ENDED) {
+            return false;
+        }
+        $ended = $this->terminated_on ?? $this->end_date;
+
+        return $ended->copy()->addDays(self::PORTAL_DAYS_AFTER_END)->isFuture() || $ended->copy()->addDays(self::PORTAL_DAYS_AFTER_END)->isToday();
     }
 
     /** Tenant's online rent page, shown only when the landlord has online rent on. */

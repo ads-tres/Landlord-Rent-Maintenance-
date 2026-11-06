@@ -4,6 +4,7 @@ namespace App\Services\Payments;
 
 use App\Models\Payment;
 use App\Models\SmsMessage;
+use App\Services\Portal\PortalLink;
 use App\Services\Sms\SmsNotifier;
 use App\Support\DateDisplay;
 
@@ -25,6 +26,9 @@ class ReceiptNotifier
             'url' => $payment->receiptUrl(),
             'app' => config('app.name'),
         ], $locale);
+        if ($payment->lease) {
+            $body = app(PortalLink::class)->append($payment->lease, $body, $locale);
+        }
 
         return $this->sms->toTenant($payment->tenant, SmsMessage::KIND_RECEIPT, $body, $payment);
     }

@@ -62,6 +62,11 @@ class RepairPageController extends Controller
             array_filter([$request->file('photo')]),
         );
 
+        // Sent from the tenant page: go back there.
+        if ($request->input('back') === 'portal' && $lease->portal_token) {
+            return redirect()->route('portal.show', $lease->portal_token)->with('sent', true);
+        }
+
         return redirect()->route('repairs.public.show', $token)->with('sent', true);
     }
 

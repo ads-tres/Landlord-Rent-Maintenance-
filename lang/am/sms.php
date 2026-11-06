@@ -10,5 +10,6 @@ return [
     'repair_link' => 'ለ:unit ጥገና ለማሳወቅ ይህን ይክፈቱ፦ :url - :app',
     'utility_bill' => 'የ:period የ:kind ሂሳብ ድርሻዎ፦ ለ:unit :amount፣ የሚከፈልበት :date። - :app',
     'move_out' => 'የ:unit የተቀማጭ ሂሳብ መግለጫ፦ ተመላሽ :refund። ዝርዝር፦ :url - :app',
+    'portal_link' => 'የ:unit ኪራይ፣ ደረሰኞች እና ጥገናዎች፦ :url - :app',
     'announcement' => ':property፦ :body - :landlord',
 ];
