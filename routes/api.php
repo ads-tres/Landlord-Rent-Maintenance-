@@ -34,6 +34,7 @@ use App\Http\Controllers\Api\V1\TenantController;
 use App\Http\Controllers\Api\V1\TenantMessagesController;
 use App\Http\Controllers\Api\V1\TenantPrivacyController;
 use App\Http\Controllers\Api\V1\UnitController;
+use App\Http\Controllers\Api\V1\UnitHistoryController;
 use App\Http\Controllers\Api\V1\UnitListController;
 use App\Http\Controllers\Api\V1\UtilityBillController;
 use App\Http\Controllers\ChapaWebhookController;
@@ -71,6 +72,8 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('properties', PropertyController::class);
         Route::apiResource('properties.units', UnitController::class)->shallow();
         Route::get('units', UnitListController::class);
+        Route::get('units/{unit}/history', [UnitHistoryController::class, 'show']);
+        Route::get('vacancy', [UnitHistoryController::class, 'vacancy']);
         Route::apiResource('tenants', TenantController::class);
         Route::get('tenants/{tenant}/messages', TenantMessagesController::class);
         Route::get('tenants/{tenant}/export', [TenantPrivacyController::class, 'export']);

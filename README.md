@@ -393,6 +393,15 @@ The page stays open, read-only, for 90 days after the lease ends. Leases include
 - `GET /rules` returns `rent_notice_days` and `earliest_increase_date`.
 - Confirm the current legal notice period with a lawyer and set it in the admin settings.
 
+## Unit history and vacancy
+
+- `GET /units/{id}/history`: a unit's timeline (tenancies started and ended, rent changes, repairs, empty spells), newest first. It also includes this year's empty days, occupancy %, rent lost and repair cost, plus totals (tenants, average stay, current rent).
+- `GET /vacancy?year=` (landlords only): empty days and rent lost per unit for the year, worst first. The year follows the landlord's calendar.
+- The dashboard's `vacancy_lost_this_year` gives the same total.
+- An empty day is one between the unit being added and today with no lease (draft leases don't count). Rent lost is days × monthly rent / 30.
+  - The rent used is the starting rent of the lease that followed, else the last lease's rent, else the asking rent of a listing.
+  - A unit never let or listed counts as empty but has no rent to price it (`priced: false`).
+
 ## Your data and deleting the account
 
 - `GET /account/export` downloads a ZIP of UTF-8 CSV files that open in Excel:
