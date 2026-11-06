@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AnnouncementController;
+use App\Http\Controllers\Api\V1\ArrearsController;
 use App\Http\Controllers\Api\V1\AssetController;
 use App\Http\Controllers\Api\V1\AttachmentController;
 use App\Http\Controllers\Api\V1\AuthController;
@@ -90,6 +91,12 @@ Route::prefix('v1')->group(function () {
         Route::patch('applications/{application}', [ListingController::class, 'updateApplication']);
 
         Route::get('charges', [ChargeController::class, 'index']);
+        Route::get('arrears', [ArrearsController::class, 'index']);
+        Route::get('leases/{lease}/arrears', [ArrearsController::class, 'show']);
+        Route::post('leases/{lease}/arrears/actions', [ArrearsController::class, 'act']);
+        Route::get('leases/{lease}/arrears/demand-letter', [ArrearsController::class, 'demandLetter']);
+        Route::post('leases/{lease}/payment-plan', [ArrearsController::class, 'storePlan']);
+        Route::delete('payment-plans/{plan}', [ArrearsController::class, 'cancelPlan']);
         Route::get('rules', RulesController::class);
 
         Route::apiResource('payments', PaymentController::class)->except('update');
