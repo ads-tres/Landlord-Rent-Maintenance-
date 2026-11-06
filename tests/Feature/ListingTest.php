@@ -81,7 +81,10 @@ class ListingTest extends TestCase
 
     public function test_only_vacant_units_and_one_open_listing(): void
     {
-        $this->createListing();
+        $id = $this->createListing();
+        $this->getJson("/api/v1/properties/{$this->unit->property_id}")
+            ->assertJsonPath('data.units.0.open_listing.id', $id)
+            ->assertJsonPath('data.units.0.open_listing.status', 'draft');
         $this->postJson("/api/v1/units/{$this->unit->id}/listing", ['asking_rent' => 1_000_000, 'available_from' => '2026-12-01'])
             ->assertUnprocessable()->assertJsonValidationErrors('unit');
 

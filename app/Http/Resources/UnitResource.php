@@ -17,6 +17,10 @@ class UnitResource extends JsonResource
             'label' => $this->label,
             'bedrooms' => $this->bedrooms,
             'status' => $this->status,
+            'open_listing' => $this->whenLoaded('openListing', fn () => $this->openListing ? [
+                'id' => $this->openListing->id,
+                'status' => $this->openListing->status,
+            ] : null),
             'active_lease' => $this->whenLoaded('activeLease', fn () => $this->activeLease ? [
                 'id' => $this->activeLease->id,
                 'monthly_rent' => $this->activeLease->monthly_rent,
