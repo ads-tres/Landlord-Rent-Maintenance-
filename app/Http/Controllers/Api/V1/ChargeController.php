@@ -26,7 +26,7 @@ class ChargeController extends Controller
         ]);
 
         $charges = Charge::query()
-            ->with(['lease.tenant', 'lease.unit.property'])
+            ->with(['lease.tenant', 'lease.unit.property', 'utilityBill.meter'])
             ->withSum('allocations as amount_paid', 'amount')
             ->when($request->input('period'), fn (Builder $q, $period) => $q->where('period', $period))
             ->when($request->input('lease_id'), fn (Builder $q, $id) => $q->where('lease_id', $id))

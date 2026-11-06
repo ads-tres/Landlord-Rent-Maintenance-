@@ -1,11 +1,14 @@
 <?php
 
+use App\Http\Controllers\Api\V1\AnnouncementController;
+use App\Http\Controllers\Api\V1\AssetController;
 use App\Http\Controllers\Api\V1\AttachmentController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\ChargeController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\LeaseController;
 use App\Http\Controllers\Api\V1\MaintenanceController;
+use App\Http\Controllers\Api\V1\MeterController;
 use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\Api\V1\PropertyController;
 use App\Http\Controllers\Api\V1\RepairLinkController;
@@ -17,6 +20,7 @@ use App\Http\Controllers\Api\V1\TenantController;
 use App\Http\Controllers\Api\V1\TenantPrivacyController;
 use App\Http\Controllers\Api\V1\UnitController;
 use App\Http\Controllers\Api\V1\UnitListController;
+use App\Http\Controllers\Api\V1\UtilityBillController;
 use App\Http\Controllers\TelegramWebhookController;
 use App\Http\Middleware\RecordLandlordActivity;
 use Illuminate\Support\Facades\Route;
@@ -62,6 +66,22 @@ Route::prefix('v1')->group(function () {
         Route::get('attachments/{attachment}', [AttachmentController::class, 'show']);
         Route::post('leases/{lease}/repair-link/send', [RepairLinkController::class, 'send']);
         Route::post('leases/{lease}/repair-link/reset', [RepairLinkController::class, 'reset']);
+
+        Route::apiResource('properties.meters', MeterController::class)->shallow();
+        Route::get('meters/{meter}/bills', [UtilityBillController::class, 'index']);
+        Route::post('meters/{meter}/bills', [UtilityBillController::class, 'store']);
+        Route::delete('bills/{bill}', [UtilityBillController::class, 'destroy']);
+
+        Route::get('properties/{property}/announcements', [AnnouncementController::class, 'index']);
+        Route::post('properties/{property}/announcements/preview', [AnnouncementController::class, 'preview']);
+        Route::post('properties/{property}/announcements', [AnnouncementController::class, 'store'])->middleware('throttle:10,60');
+
+        Route::get('assets', [AssetController::class, 'all']);
+        Route::get('properties/{property}/assets', [AssetController::class, 'index']);
+        Route::post('properties/{property}/assets', [AssetController::class, 'store']);
+        Route::patch('assets/{asset}', [AssetController::class, 'update']);
+        Route::delete('assets/{asset}', [AssetController::class, 'destroy']);
+        Route::post('assets/{asset}/services', [AssetController::class, 'logService']);
 
         Route::post('telegram/link', [TelegramLinkController::class, 'store']);
         Route::delete('telegram/link', [TelegramLinkController::class, 'destroy']);

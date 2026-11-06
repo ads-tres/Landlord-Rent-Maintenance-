@@ -14,7 +14,7 @@ class ReceiptData
      */
     public static function for(Payment $payment, string $locale): array
     {
-        $payment->loadMissing(['landlord', 'tenant', 'lease.unit.property', 'allocations.charge']);
+        $payment->loadMissing(['landlord', 'tenant', 'lease.unit.property', 'allocations.charge.utilityBill.meter']);
         $calendar = $payment->landlord->calendar_pref ?? DateDisplay::GREGORIAN;
         $lease = $payment->lease;
 
@@ -39,15 +39,24 @@ class ReceiptData
             'method' => __('payments.methods.'.$payment->method, [], $locale),
             'reference' => $payment->reference,
             'lines' => $payment->allocations
-                ->sortBy(fn ($a) => $a->charge->period)
+                ->sortBy(fn ($a) => [$a->charge->period, $a->charge->type !== 'rent'])
                 ->map(fn ($a) => [
-                    'label' => self::period($a->charge->period, $locale, $calendar),
+                    'label' => self::chargeLabel($a->charge, $locale, $calendar),
                     'amount' => self::birr($a->amount, $locale),
                     'full' => $a->charge->status === Charge::STATUS_PAID,
                 ])->values()->all(),
             'outstanding' => $outstanding > 0 ? self::birr($outstanding, $locale) : null,
             'url' => $payment->receiptUrl(),
         ];
+    }
+
+    /** "November 2026" for rent, "Electricity · November 2026" for a utility share. */
+    public static function chargeLabel(Charge $charge, string $locale, string $calendar = DateDisplay::GREGORIAN): string
+    {
+        $period = self::period($charge->period, $locale, $calendar);
+        $meter = $charge->utilityBill?->meter;
+
+        return $meter ? __('utilities.kinds.'.$meter->kind, [], $locale).' · '.$period : $period;
     }
 
     public static function birr(int $santim, string $locale = 'en'): string

@@ -8,4 +8,6 @@ return [
     'repair_in_progress' => 'Repair update for :unit: ":title" is being worked on.:note - :app',
     'repair_done' => 'Repair update for :unit: ":title" is done.:note - :app',
     'repair_link' => 'To report a repair for :unit, open :url - :app',
+    'utility_bill' => 'Your share of the :kind bill for :period: :amount for :unit, due :date. - :app',
+    'announcement' => ':property: :body - :landlord',
 ];

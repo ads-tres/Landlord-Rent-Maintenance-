@@ -8,4 +8,6 @@ return [
     'repair_in_progress' => 'የ:unit ጥገና፦ ":title" እየተሰራ ነው።:note - :app',
     'repair_done' => 'የ:unit ጥገና፦ ":title" ተጠናቋል።:note - :app',
     'repair_link' => 'ለ:unit ጥገና ለማሳወቅ ይህን ይክፈቱ፦ :url - :app',
+    'utility_bill' => 'የ:period የ:kind ሂሳብ ድርሻዎ፦ ለ:unit :amount፣ የሚከፈልበት :date። - :app',
+    'announcement' => ':property፦ :body - :landlord',
 ];

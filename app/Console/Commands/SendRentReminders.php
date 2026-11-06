@@ -30,6 +30,7 @@ class SendRentReminders extends Command
         foreach ($batches as $kind => $date) {
             Charge::query()
                 ->withoutGlobalScopes()
+                ->where('type', 'rent')
                 ->whereIn('status', [Charge::STATUS_DUE, Charge::STATUS_PARTIAL])
                 ->whereDate('due_date', $date)
                 ->whereHas('landlord', fn ($q) => $q->where('sms_reminders', true))
