@@ -283,6 +283,15 @@ Landlord alerts go to the landlord's phone as push notifications through Firebas
 
 **Settings:** users can switch push off with `PATCH /auth/me {push_enabled: false}`. `GET /auth/me` returns `push_available` and `push_enabled`.
 
+## Annual summary
+
+`GET /reports/annual?year=&calendar=&format=json|pdf|xlsx` returns the year month by month: rent received, refunds, expenses, net, and units let (with occupancy %). It also gives totals, average occupancy, and figures by property.
+- **Ethiopian calendar:** the fiscal year, Hamle to Sene, with Pagume as its own short month.
+- **Gregorian calendar:** January to December.
+- **No year given:** the current year.
+
+Landlord only.
+
 ## Excel export
 
 `GET /reports/quarterly?...&format=xlsx` downloads the quarter as a workbook for an accountant or the tax office. Landlord only. It is built with OpenSpout, which streams rows and uses little memory. Sheets:

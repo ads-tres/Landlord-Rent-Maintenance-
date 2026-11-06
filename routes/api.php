@@ -117,6 +117,7 @@ Route::prefix('v1')->group(function () {
 
         Route::get('dashboard', DashboardController::class);
         Route::get('reports/quarterly', [ReportController::class, 'quarterly']);
+        Route::get('reports/annual', [ReportController::class, 'annual']);
 
         Route::apiResource('expenses', ExpenseController::class);
         Route::post('expenses/{expense}/photos', [ExpenseController::class, 'addPhoto']);

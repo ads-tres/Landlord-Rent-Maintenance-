@@ -20,4 +20,16 @@ return [
     'net' => 'የተጣራ (ገቢ ሲቀነስ ወጪ)',
     'expenses_note' => 'ወጪዎቹ በመተግበሪያው የመዘገቧቸው ናቸው። የትኞቹ በኪራይ ገቢ ግብር ሕግ እንደሚቀነሱ ከሂሳብ ባለሙያዎ ይጠይቁ።',
     'generated' => 'የተዘጋጀበት ቀን :date',
+    'annual_title' => 'የዓመት ማጠቃለያ',
+    'year_label' => [
+        'ethiopian' => 'የበጀት ዓመት :year',
+        'gregorian' => ':year',
+    ],
+    'average_occupancy' => 'አማካይ የተከራዩ ክፍሎች',
+    'col_income' => 'የተቀበሉት',
+    'col_refunds' => 'የተመለሰ',
+    'col_expenses' => 'ወጪ',
+    'col_net' => 'የተጣራ',
+    'col_occupancy' => 'የተከራየ',
+    'occupancy_note' => 'የተከራዩ ክፍሎች መጠን በየወሩ ውል ያላቸው ክፍሎች ድርሻ ነው።',
 ];
