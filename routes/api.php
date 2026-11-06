@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\V1\ListingController;
 use App\Http\Controllers\Api\V1\MaintenanceController;
 use App\Http\Controllers\Api\V1\MeterController;
 use App\Http\Controllers\Api\V1\MoveOutController;
+use App\Http\Controllers\Api\V1\OnboardingController;
 use App\Http\Controllers\Api\V1\OnlineRentController;
 use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\Api\V1\PortalLinkController;
@@ -56,6 +57,8 @@ Route::prefix('v1')->group(function () {
         Route::get('auth/me', [AuthController::class, 'me']);
         Route::patch('auth/me', [AuthController::class, 'updateMe']);
         Route::post('auth/logout', [AuthController::class, 'logout']);
+        Route::get('onboarding', [OnboardingController::class, 'show']);
+        Route::post('onboarding/dismiss', [OnboardingController::class, 'dismiss']);
         Route::post('devices', [DeviceController::class, 'store']);
         Route::delete('devices', [DeviceController::class, 'destroy']);
 

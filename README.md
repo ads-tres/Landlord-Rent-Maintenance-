@@ -294,6 +294,20 @@ Landlord alerts go to the landlord's phone as push notifications through Firebas
 
 Amounts are numbers formatted as `#,##0.00`, so they add up in Excel. Sheet names and headers follow the app language.
 
+## First-time setup
+
+`GET /onboarding` returns the setup checklist for a new landlord. Each step is worked out from their data, so it ticks itself off as they use the app:
+- profile name
+- a property
+- units
+- a tenant
+- a lease
+- a first payment
+- the tenant page or repair link sent to a tenant
+- optional: Telegram connected and a caretaker invited
+
+The response also includes `done_count`/`total` (counting only the required steps), `completed`, `dismissed` and `first_lease_id`. `POST /onboarding/dismiss` hides the checklist. Landlord only.
+
 ## Statement of account
 
 `GET /leases/{id}/statement?from=&to=&language=am|en&format=json|pdf` returns a statement for one lease. It shows:
