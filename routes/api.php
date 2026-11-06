@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\V1\LeaseController;
 use App\Http\Controllers\Api\V1\ListingController;
 use App\Http\Controllers\Api\V1\MaintenanceController;
 use App\Http\Controllers\Api\V1\MeterController;
+use App\Http\Controllers\Api\V1\MoveOutController;
 use App\Http\Controllers\Api\V1\OnlineRentController;
 use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\Api\V1\PropertyController;
@@ -59,6 +60,15 @@ Route::prefix('v1')->group(function () {
         Route::post('leases/{lease}/end', [LeaseController::class, 'end']);
         Route::post('leases/{lease}/rent-change', [LeaseController::class, 'rentChange']);
         Route::post('leases/{lease}/activate', [LeaseController::class, 'activate']);
+        Route::post('leases/{lease}/move-out', [MoveOutController::class, 'start']);
+        Route::get('move-outs/{moveOut}', [MoveOutController::class, 'show']);
+        Route::patch('move-outs/{moveOut}', [MoveOutController::class, 'update']);
+        Route::post('move-outs/{moveOut}/deductions', [MoveOutController::class, 'addDeduction']);
+        Route::delete('move-out-deductions/{deduction}', [MoveOutController::class, 'removeDeduction']);
+        Route::post('move-outs/{moveOut}/photos', [MoveOutController::class, 'addPhoto']);
+        Route::post('move-outs/{moveOut}/settle', [MoveOutController::class, 'settle']);
+        Route::post('move-outs/{moveOut}/send', [MoveOutController::class, 'send']);
+        Route::get('move-outs/{moveOut}/statement', [MoveOutController::class, 'statement']);
 
         Route::get('listings', [ListingController::class, 'index']);
         Route::post('units/{unit}/listing', [ListingController::class, 'store']);

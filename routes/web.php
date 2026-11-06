@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Web\ListingPageController;
+use App\Http\Controllers\Web\MoveOutStatementController;
 use App\Http\Controllers\Web\PayPageController;
 use App\Http\Controllers\Web\ReceiptController;
 use App\Http\Controllers\Web\RepairPageController;
@@ -21,6 +22,12 @@ Route::get('/r/{token}', [ReceiptController::class, 'show'])
     ->where('token', '[a-z0-9]{10}')
     ->middleware('throttle:60,1')
     ->name('receipts.show');
+
+// Tenant deposit statement linked from the move-out SMS.
+Route::get('/mo/{token}', [MoveOutStatementController::class, 'show'])
+    ->where('token', '[a-z0-9]{10}')
+    ->middleware('throttle:60,1')
+    ->name('move-outs.statement');
 
 // Tenant repair page linked from SMS: report a problem with a photo, see recent statuses.
 Route::get('/fix/{token}', [RepairPageController::class, 'show'])

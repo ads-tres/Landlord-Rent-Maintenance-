@@ -9,5 +9,6 @@ return [
     'repair_done' => 'የ:unit ጥገና፦ ":title" ተጠናቋል።:note - :app',
     'repair_link' => 'ለ:unit ጥገና ለማሳወቅ ይህን ይክፈቱ፦ :url - :app',
     'utility_bill' => 'የ:period የ:kind ሂሳብ ድርሻዎ፦ ለ:unit :amount፣ የሚከፈልበት :date። - :app',
+    'move_out' => 'የ:unit የተቀማጭ ሂሳብ መግለጫ፦ ተመላሽ :refund። ዝርዝር፦ :url - :app',
     'announcement' => ':property፦ :body - :landlord',
 ];

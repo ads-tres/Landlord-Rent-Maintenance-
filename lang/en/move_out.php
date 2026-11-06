@@ -1,0 +1,37 @@
+<?php
+
+return [
+    'lease_not_active' => 'Only an active lease can be moved out.',
+    'already_settled' => 'This move-out is already settled.',
+    'not_settled' => 'Settle the move-out first.',
+    'charge_deduction' => 'Unpaid rent and utility shares are taken from the deposit or stay owed. To forgive one, remove the payment owed on the lease instead.',
+    'refund_method_required' => 'Choose how the refund was paid.',
+    'too_many_photos' => 'A move-out can have at most 12 photos.',
+    'deposit_payment_note' => 'Paid from the deposit at move-out',
+    'kinds' => [
+        'unpaid_rent' => 'Unpaid rent',
+        'unpaid_utility' => 'Unpaid utility share',
+        'damage' => 'Damage',
+        'cleaning' => 'Cleaning',
+        'keys' => 'Keys',
+        'other' => 'Other',
+    ],
+    'statement' => [
+        'title' => 'Deposit statement',
+        'tenant' => 'Tenant',
+        'unit' => 'Home',
+        'lease' => 'Lease',
+        'moved_out' => 'Moved out',
+        'keys' => 'Keys returned',
+        'yes' => 'Yes',
+        'no' => 'No',
+        'landlord' => 'Landlord',
+        'deposit' => 'Deposit held',
+        'no_deductions' => 'No deductions',
+        'refund' => 'Refund',
+        'refunded_by' => 'Refunded by :method',
+        'balance' => 'The deposit did not cover everything: :amount is still owed.',
+        'condition' => 'Condition at move-out',
+        'settled_on' => 'Settled on :date',
+    ],
+];

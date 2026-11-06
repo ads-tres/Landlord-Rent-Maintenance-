@@ -12,6 +12,7 @@ use App\Models\Charge;
 use App\Models\Lease;
 use App\Models\PaymentAllocation;
 use App\Models\Unit;
+use App\Services\Rent\LeaseEnder;
 use App\Services\Rent\RentRules;
 use App\Services\Rent\RentSchedule;
 use Carbon\CarbonImmutable;
@@ -107,19 +108,7 @@ class LeaseController extends Controller
 
         $endedOn = CarbonImmutable::parse($request->validated('ended_on'));
 
-        DB::transaction(function () use ($lease, $endedOn) {
-            $lease->update([
-                'status' => Lease::STATUS_ENDED,
-                'terminated_on' => $endedOn->lessThan($lease->end_date) ? $endedOn : null,
-            ]);
-
-            $lease->charges()
-                ->where('period', '>', $endedOn->format('Y-m'))
-                ->whereDoesntHave('allocations')
-                ->delete();
-
-            $lease->unit->update(['status' => Unit::STATUS_VACANT]); // model update so vacant_since is set
-        });
+        app(LeaseEnder::class)->end($lease, $endedOn);
 
         return new LeaseResource($this->loadDetail($lease->refresh()));
     }
