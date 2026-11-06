@@ -11,10 +11,13 @@ use App\Http\Resources\LeaseResource;
 use App\Models\Charge;
 use App\Models\Lease;
 use App\Models\PaymentAllocation;
+use App\Models\SmsMessage;
 use App\Models\Unit;
 use App\Services\Rent\LeaseEnder;
+use App\Services\Rent\RentIncreaseNotices;
 use App\Services\Rent\RentRules;
 use App\Services\Rent\RentSchedule;
+use App\Support\DateDisplay;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -139,12 +142,24 @@ class LeaseController extends Controller
             ])]);
         }
 
-        DB::transaction(function () use ($lease, $effective, $newRent, $oldRent) {
+        // An increase needs written notice, unless the tenant agreed to it in writing.
+        $increase = $newRent > $oldRent;
+        $agreed = $request->boolean('tenant_agreed');
+        if ($increase && ! $agreed && $effective->lessThan($this->rules->earliestIncreaseDate())) {
+            throw ValidationException::withMessages(['effective_date' => __('leases.short_notice', [
+                'days' => $this->rules->noticeDays(),
+                'date' => DateDisplay::date($this->rules->earliestIncreaseDate(), app()->getLocale(), $request->user()->actingLandlord()->calendar_pref ?: DateDisplay::GREGORIAN),
+            ])]);
+        }
+
+        $change = DB::transaction(function () use ($lease, $effective, $newRent, $oldRent, $agreed) {
             $change = $lease->rentChanges()->make([
                 'old_rent' => $oldRent,
                 'new_rent' => $newRent,
                 'effective_date' => $effective,
                 'cap_percent' => $this->rules->capPercent(),
+                'notice_days' => max(0, (int) today()->diffInDays($effective, false)),
+                'tenant_agreed' => $agreed,
             ]);
             $change->landlord_id = $lease->landlord_id;
             $change->save();
@@ -154,7 +169,14 @@ class LeaseController extends Controller
             }
 
             $this->schedule->reprice($lease, $effective->format('Y-m'));
+
+            return $change;
         });
+
+        // The tenant hears about upcoming changes by SMS (or Telegram) right away.
+        if ($effective->isAfter(today()) && $request->boolean('notify_tenant', true)) {
+            app(RentIncreaseNotices::class)->send($change, SmsMessage::KIND_RENT_CHANGE);
+        }
 
         return new LeaseResource($this->loadDetail($lease->refresh()));
     }

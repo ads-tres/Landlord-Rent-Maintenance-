@@ -75,6 +75,10 @@ class LeaseResource extends JsonResource
                     'new_rent' => $c->new_rent,
                     'effective_date' => $c->effective_date->toDateString(),
                     'cap_percent' => (float) $c->cap_percent,
+                    'notice_days' => $c->notice_days,
+                    'tenant_agreed' => (bool) $c->tenant_agreed,
+                    'notified_at' => $c->notified_at,
+                    'upcoming' => $c->effective_date->isAfter(today()),
                 ])),
             'created_at' => $this->created_at,
         ];

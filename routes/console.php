@@ -36,4 +36,7 @@ Schedule::command('leases:renewal-reminders')->dailyAt('09:10')->withoutOverlapp
 Schedule::command('arrears:plans')->dailyAt('10:20')->withoutOverlapping()->onOneServer();
 
 // Accounts whose owner asked for deletion more than 30 days ago.
+// A week before a rent increase starts, remind the tenant.
+Schedule::command('rent:change-reminders')->dailyAt('09:40')->withoutOverlapping()->onOneServer();
+
 Schedule::command('accounts:purge')->dailyAt('03:40')->withoutOverlapping()->onOneServer();

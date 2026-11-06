@@ -13,6 +13,12 @@ class SmsMessage extends Model
 
     public const KIND_RECEIPT = 'receipt';
 
+    public const KIND_RENT_CHANGE = 'rent_change';
+
+    public const KIND_RENT_CHANGE_REMINDER = 'rent_change_reminder';
+
+    public const KIND_RENT_CHANGE_CANCELLED = 'rent_change_cancelled';
+
     public const KIND_MOVE_OUT = 'move_out';
 
     public const KIND_PORTAL = 'portal_link';

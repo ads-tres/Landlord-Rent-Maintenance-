@@ -10,7 +10,7 @@ class RentChange extends Model
 {
     use BelongsToLandlord;
 
-    protected $fillable = ['lease_id', 'old_rent', 'new_rent', 'effective_date', 'cap_percent'];
+    protected $fillable = ['lease_id', 'old_rent', 'new_rent', 'effective_date', 'cap_percent', 'notice_days', 'tenant_agreed'];
 
     protected function casts(): array
     {
@@ -19,6 +19,9 @@ class RentChange extends Model
             'new_rent' => 'integer',
             'effective_date' => 'date',
             'cap_percent' => 'decimal:2',
+            'notice_days' => 'integer',
+            'tenant_agreed' => 'boolean',
+            'notified_at' => 'datetime',
         ];
     }
 

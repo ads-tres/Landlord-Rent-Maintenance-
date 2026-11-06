@@ -23,6 +23,7 @@ use App\Http\Controllers\Api\V1\OnlineRentController;
 use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\Api\V1\PortalLinkController;
 use App\Http\Controllers\Api\V1\PropertyController;
+use App\Http\Controllers\Api\V1\RentChangeController;
 use App\Http\Controllers\Api\V1\RepairLinkController;
 use App\Http\Controllers\Api\V1\ReportController;
 use App\Http\Controllers\Api\V1\RulesController;
@@ -78,6 +79,8 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('leases', LeaseController::class)->except('destroy');
         Route::post('leases/{lease}/end', [LeaseController::class, 'end']);
         Route::post('leases/{lease}/rent-change', [LeaseController::class, 'rentChange']);
+        Route::delete('leases/{lease}/rent-changes/{rentChange}', [RentChangeController::class, 'destroy']);
+        Route::get('leases/{lease}/rent-changes/{rentChange}/notice', [RentChangeController::class, 'notice']);
         Route::post('leases/{lease}/activate', [LeaseController::class, 'activate']);
         Route::get('leases/{lease}/statement', LeaseStatementController::class);
         Route::get('leases/{lease}/agreement', [LeaseAgreementController::class, 'show']);

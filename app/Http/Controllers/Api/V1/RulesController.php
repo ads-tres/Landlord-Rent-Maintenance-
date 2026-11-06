@@ -15,6 +15,8 @@ class RulesController extends Controller
             'data' => [
                 'rent_cap_percent' => $rules->capPercent(),
                 'min_lease_years' => RentRules::MIN_LEASE_YEARS,
+                'rent_notice_days' => $rules->noticeDays(),
+                'earliest_increase_date' => $rules->earliestIncreaseDate()->toDateString(),
             ],
         ]);
     }
