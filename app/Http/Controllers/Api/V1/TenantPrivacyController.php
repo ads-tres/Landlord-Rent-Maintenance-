@@ -40,6 +40,7 @@ class TenantPrivacyController extends Controller
                 'phone' => $tenant->phone,
                 'id_number' => $tenant->id_number,
                 'address' => $tenant->address,
+                'landlord_notes' => $tenant->notes,
                 'created_at' => $tenant->created_at,
             ],
             'leases' => $tenant->leases->map(fn (Lease $l) => [
@@ -96,6 +97,7 @@ class TenantPrivacyController extends Controller
                 'phone' => '+251000000000',
                 'id_number' => null,
                 'address' => null,
+                'notes' => null,
             ])->save();
         });
 

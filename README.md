@@ -402,6 +402,14 @@ The page stays open, read-only, for 90 days after the lease ends. Leases include
   - The rent used is the starting rent of the lease that followed, else the last lease's rent, else the asking rent of a listing.
   - A unit never let or listed counts as empty but has no rent to price it (`priced: false`).
 
+## Tenant payment record
+
+- `GET /tenants/{id}/record`: how the tenant has paid rent across all their leases with this landlord. It counts rent months due: paid on time, paid late, still unpaid, plus % on time, average days late, outstanding, tenant since, and the last 12 months.
+  - On time means fully paid by the due date. Days late run to the payment that cleared the month.
+  - Rating: `new` (fewer than 3 months due), `good` (90%+ on time and nothing unpaid), `fair` (70%+), `poor`.
+- `PUT /tenants/{id}/notes {notes}`: the landlord's private notes (landlords only; caretakers don't see them). Notes are included in the tenant's data export and cleared when the tenant is anonymized.
+- A short version appears in `GET /leases/{id}/renewal-check` (`tenant_record`) and on applications from someone who rented before (`former_tenant`, matched by phone).
+
 ## Your data and deleting the account
 
 - `GET /account/export` downloads a ZIP of UTF-8 CSV files that open in Excel:

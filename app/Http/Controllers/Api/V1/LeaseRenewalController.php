@@ -9,6 +9,7 @@ use App\Services\Payments\ReceiptData;
 use App\Services\Rent\LeaseRenewer;
 use App\Services\Rent\RentRules;
 use App\Services\Rent\RentSchedule;
+use App\Services\Tenants\TenantRecord;
 use App\Support\DateDisplay;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\CarbonImmutable;
@@ -34,6 +35,8 @@ class LeaseRenewalController extends Controller
             'max_rent' => $rules->maxAllowedRent($rent),
             'cap_percent' => $rules->capPercent(),
             'can_renew_from' => CarbonImmutable::parse($lease->end_date)->subDays(LeaseRenewer::MAX_DAYS_BEFORE_END)->toDateString(),
+            // How the tenant has paid, to weigh up before renewing.
+            'tenant_record' => $lease->tenant ? app(TenantRecord::class)->summary($lease->tenant) : null,
         ]]);
     }
 
