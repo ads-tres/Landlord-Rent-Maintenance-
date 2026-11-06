@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\AccountController;
 use App\Http\Controllers\Api\V1\AnnouncementController;
 use App\Http\Controllers\Api\V1\ArrearsController;
 use App\Http\Controllers\Api\V1\AssetController;
@@ -58,6 +59,9 @@ Route::prefix('v1')->group(function () {
         Route::get('auth/me', [AuthController::class, 'me']);
         Route::patch('auth/me', [AuthController::class, 'updateMe']);
         Route::post('auth/logout', [AuthController::class, 'logout']);
+        Route::get('account/export', [AccountController::class, 'export'])->middleware('throttle:5,60');
+        Route::post('account/deletion', [AccountController::class, 'requestDeletion']);
+        Route::delete('account/deletion', [AccountController::class, 'cancelDeletion']);
         Route::get('onboarding', [OnboardingController::class, 'show']);
         Route::post('onboarding/dismiss', [OnboardingController::class, 'dismiss']);
         Route::post('devices', [DeviceController::class, 'store']);

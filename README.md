@@ -384,6 +384,16 @@ The page stays open, read-only, for 90 days after the lease ends. Leases include
 - Receipts and rent reminders end with "Your account: {link}" when that doesn't cost an extra SMS segment. On Telegram the line is always added.
 - Tenants get their links when they agree to messages in the Telegram bot.
 
+## Your data and deleting the account
+
+- `GET /account/export` downloads a ZIP of UTF-8 CSV files that open in Excel:
+  - account, properties, units, tenants, leases, charges, payments, refunds, expenses, repairs and move-outs
+  - a short README
+  - amounts are in birr
+- `POST /account/deletion {phone}` schedules the account for deletion; the landlord confirms by typing their own number. It is deleted 30 days later unless cancelled with `DELETE /account/deletion`. `GET /auth/me` returns `deletion_scheduled_for`.
+- `accounts:purge` runs daily at 03:40 and deletes accounts past the grace period. That removes everything tied to the landlord, their caretakers, the message log and their stored photos.
+- All of this is landlord only.
+
 ## Messages to tenants
 
 - **Quiet hours:** no SMS or Telegram messages go to tenants between 21:00 and 07:00 Addis Ababa time. A message created during those hours is held (`send_after`) and goes out at 07:00.

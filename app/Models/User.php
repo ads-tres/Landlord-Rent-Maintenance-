@@ -43,6 +43,7 @@ class User extends Authenticatable
             'online_rent_enabled' => 'boolean',
             'removed_at' => 'datetime',
             'onboarding_dismissed_at' => 'datetime',
+            'deletion_requested_at' => 'datetime',
             'id_number' => 'encrypted',
         ];
     }

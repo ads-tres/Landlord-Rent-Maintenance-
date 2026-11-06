@@ -22,6 +22,7 @@ class CaretakerLimits
         V1\OnlineRentController::class.'@show',
         V1\OnlineRentController::class.'@update',
         V1\TeamController::class.'@*',
+        V1\AccountController::class.'@*',
         V1\OnboardingController::class.'@*',
         V1\TelegramLinkController::class.'@*',
         V1\PropertyController::class.'@store',

@@ -34,3 +34,6 @@ Schedule::command('leases:renewal-reminders')->dailyAt('09:10')->withoutOverlapp
 
 // Payment plan instalment reminders (the day before) and plan status.
 Schedule::command('arrears:plans')->dailyAt('10:20')->withoutOverlapping()->onOneServer();
+
+// Accounts whose owner asked for deletion more than 30 days ago.
+Schedule::command('accounts:purge')->dailyAt('03:40')->withoutOverlapping()->onOneServer();
