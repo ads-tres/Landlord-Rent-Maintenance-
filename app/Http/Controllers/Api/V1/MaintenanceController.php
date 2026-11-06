@@ -12,6 +12,7 @@ use App\Services\Expenses\ExpenseRecorder;
 use App\Services\Repairs\PhotoStore;
 use App\Services\Repairs\RepairService;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Gate;
@@ -45,8 +46,13 @@ class MaintenanceController extends Controller
     }
 
     /** POST /maintenance (multipart) — the landlord records a repair, with up to 4 photos. */
-    public function store(StoreMaintenanceRequest $request): MaintenanceRequestResource
+    public function store(StoreMaintenanceRequest $request): MaintenanceRequestResource|JsonResponse
     {
+        // A repair logged offline and sent again: return the one already saved.
+        if ($existing = $this->alreadySaved(MaintenanceRequest::class, $request)) {
+            return (new MaintenanceRequestResource($this->loadDetail($existing)))->response()->setStatusCode(200);
+        }
+
         $unit = Unit::query()->findOrFail($request->validated('unit_id'));
 
         $item = $this->repairs->open($unit, $request->validated(), 'landlord', photos: $request->file('photos', []));

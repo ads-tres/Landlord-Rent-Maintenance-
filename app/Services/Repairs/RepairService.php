@@ -39,6 +39,7 @@ class RepairService
                 'source' => $source,
                 'opened_at' => now(),
             ]);
+            $request->client_ref = $data['client_ref'] ?? null;
             $request->landlord_id = $unit->landlord_id;
             $request->save();
 
