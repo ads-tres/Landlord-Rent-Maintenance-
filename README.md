@@ -251,6 +251,16 @@ The tenant pays; the money goes straight to the landlord's bank through Chapa sp
 - The quarterly report (JSON and PDF) adds `expenses_total`, `expenses_by_category`, per-property `expenses` and `net` (rent received minus expenses). It does not decide what is deductible; the PDF says to confirm that with an accountant.
 - The dashboard has `expenses_this_month`.
 
+## Lease renewal
+
+- `GET /leases/{id}/renewal-check` returns the suggested new end date (another 2 years), the rent from the day after the current end, the highest rent allowed under the yearly cap, and when renewing becomes possible.
+- `POST /leases/{id}/renew {new_end_date, new_rent?, notify_tenant?}` renews the lease.
+  - It extends the same lease, so payments and history stay together. A rent change, checked against the cap, takes effect the day after the old end.
+  - It can be done in the last 180 days of the lease. Landlord only.
+  - It texts the tenant the new end date and rent.
+- `GET /leases/{id}/renewals` lists past renewals. `GET /lease-renewals/{id}/addendum` returns a PDF addendum in Amharic or English to sign and register with the woreda.
+- `leases:renewal-reminders` runs daily at 09:10. It tells landlords on Telegram when a lease ends in 60 days and again at 30 days.
+
 ## Move-out and deposit
 
 1. `POST /leases/{id}/move-out {moved_out_on, condition_notes?, keys_returned?}` starts the move-out (or returns the one already started). Every unpaid rent and utility charge up to the move-out month is listed as a deduction; rent for the move-out month is charged even if it isn't due yet.

@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\ChargeController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\ExpenseController;
 use App\Http\Controllers\Api\V1\LeaseController;
+use App\Http\Controllers\Api\V1\LeaseRenewalController;
 use App\Http\Controllers\Api\V1\ListingController;
 use App\Http\Controllers\Api\V1\MaintenanceController;
 use App\Http\Controllers\Api\V1\MeterController;
@@ -63,6 +64,10 @@ Route::prefix('v1')->group(function () {
         Route::post('leases/{lease}/end', [LeaseController::class, 'end']);
         Route::post('leases/{lease}/rent-change', [LeaseController::class, 'rentChange']);
         Route::post('leases/{lease}/activate', [LeaseController::class, 'activate']);
+        Route::get('leases/{lease}/renewal-check', [LeaseRenewalController::class, 'check']);
+        Route::post('leases/{lease}/renew', [LeaseRenewalController::class, 'store']);
+        Route::get('leases/{lease}/renewals', [LeaseRenewalController::class, 'index']);
+        Route::get('lease-renewals/{renewal}/addendum', [LeaseRenewalController::class, 'addendum']);
         Route::post('leases/{lease}/move-out', [MoveOutController::class, 'start']);
         Route::get('move-outs/{moveOut}', [MoveOutController::class, 'show']);
         Route::patch('move-outs/{moveOut}', [MoveOutController::class, 'update']);
