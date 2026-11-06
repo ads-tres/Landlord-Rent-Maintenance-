@@ -251,6 +251,17 @@ The tenant pays; the money goes straight to the landlord's bank through Chapa sp
 - The quarterly report (JSON and PDF) adds `expenses_total`, `expenses_by_category`, per-property `expenses` and `net` (rent received minus expenses). It does not decide what is deductible; the PDF says to confirm that with an accountant.
 - The dashboard has `expenses_this_month`.
 
+## Excel export
+
+`GET /reports/quarterly?...&format=xlsx` downloads the quarter as a workbook for an accountant or the tax office. Landlord only. It is built with OpenSpout, which streams rows and uses little memory. Sheets:
+
+1. **Summary:** rent received, expenses and net; by property (income, expenses, net), by month, and expenses by type; the same disclaimers as the PDF.
+2. **Payments:** Gregorian and Ethiopian dates, receipt number, tenant, property, unit, method, reference, amount in birr, and who logged it if it was a caretaker; with a total.
+3. **Expenses:** dates, property, unit, type, description, who was paid, amount, and whether it was entered by hand or automatically; with a total.
+4. **Rent roll:** every lease that overlapped the quarter, with monthly rent, what was charged and received in the quarter, and what was owed at the end of the quarter.
+
+Amounts are numbers formatted as `#,##0.00`, so they add up in Excel. Sheet names and headers follow the app language.
+
 ## Lease renewal
 
 - `GET /leases/{id}/renewal-check` returns the suggested new end date (another 2 years), the rent from the day after the current end, the highest rent allowed under the yearly cap, and when renewing becomes possible.
