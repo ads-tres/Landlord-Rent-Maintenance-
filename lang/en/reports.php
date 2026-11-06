@@ -20,4 +20,16 @@ return [
     'net' => 'Net (received minus expenses)',
     'expenses_note' => 'Expenses are the costs you recorded in the app. Ask your accountant which ones count as deductible under the rental income tax rules.',
     'generated' => 'Generated on :date',
+    'annual_title' => 'Annual summary',
+    'year_label' => [
+        'ethiopian' => 'Fiscal year :year',
+        'gregorian' => ':year',
+    ],
+    'average_occupancy' => 'Average occupancy',
+    'col_income' => 'Received',
+    'col_refunds' => 'Refunds',
+    'col_expenses' => 'Expenses',
+    'col_net' => 'Net',
+    'col_occupancy' => 'Let',
+    'occupancy_note' => 'Occupancy is the share of units with a lease in each month.',
 ];
