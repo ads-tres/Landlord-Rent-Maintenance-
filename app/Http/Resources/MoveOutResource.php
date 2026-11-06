@@ -26,6 +26,8 @@ class MoveOutResource extends JsonResource
             'other_total' => $t['other'],
             'deposit_applied' => $t['applied'],
             'deposit_kept' => $t['kept'],
+            'prepaid' => $t['prepaid'],
+            'prepaid_to_unpaid' => $t['prepaid_to_unpaid'],
             'refund_amount' => $t['refund'],
             'balance_owed' => $t['balance'],
             'refund_method' => $this->refund_method,

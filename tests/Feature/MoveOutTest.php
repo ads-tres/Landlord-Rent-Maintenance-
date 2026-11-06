@@ -162,4 +162,44 @@ class MoveOutTest extends TestCase
         $this->postJson("/api/v1/leases/{$this->lease->id}/move-out", ['moved_out_on' => '2026-11-30'])->assertUnprocessable();
         $this->get('/mo/abcdefghij')->assertNotFound();
     }
+
+    public function test_rent_paid_for_after_the_move_out_is_refunded(): void
+    {
+        $this->pay(4_000_000, '2026-11-10'); // October to January
+        $m = $this->start(); // moving out at the end of November
+        $this->assertSame([0, 2_000_000], [$m['unpaid_total'], $m['prepaid']]);
+
+        $m = $this->postJson("/api/v1/move-outs/{$m['id']}/deductions", ['kind' => 'damage', 'description' => 'Broken window', 'amount' => 300_000])->json('data');
+        $this->assertSame([0, 300_000, 3_700_000, 0], [$m['deposit_applied'], $m['deposit_kept'], $m['refund_amount'], $m['balance_owed']]);
+
+        $m = $this->postJson("/api/v1/move-outs/{$m['id']}/settle", ['refund_method' => 'bank', 'notify_tenant' => false])->assertOk()->json('data');
+        $this->assertSame([2_000_000, 3_700_000], [$m['prepaid'], $m['refund_amount']]);
+
+        // December and January are gone; the statement nets to zero with the refund line.
+        $this->assertSame(0, Charge::query()->where('lease_id', $this->lease->id)->where('period', '>', '2026-11')->count());
+        $statement = $this->getJson("/api/v1/leases/{$this->lease->id}/statement?to=2026-11-30")->json('data');
+        $this->assertSame(0, $statement['closing']);
+        $this->assertSame('refund', end($statement['lines'])['kind']);
+
+        $token = MoveOut::query()->withoutGlobalScopes()->value('statement_token');
+        $this->get("/mo/{$token}?lang=en")->assertSee('Rent already paid for after the move-out')->assertSee('Br 37,000');
+    }
+
+    public function test_prepaid_rent_covers_unpaid_charges_first(): void
+    {
+        $this->pay(3_000_000, '2026-11-10'); // October to December
+        $utility = Charge::query()->create([
+            'lease_id' => $this->lease->id, 'period' => '2026-10', 'type' => 'utility', 'source_key' => 'bill:test',
+            'amount_due' => 50_000, 'due_date' => '2026-10-25', 'status' => Charge::STATUS_LATE,
+        ]);
+        $utility->forceFill(['landlord_id' => $this->landlord->id])->save();
+
+        $m = $this->start();
+        $this->assertSame([50_000, 1_000_000], [$m['unpaid_total'], $m['prepaid']]);
+        $this->assertSame([50_000, 0, 2_950_000], [$m['prepaid_to_unpaid'], $m['deposit_applied'], $m['refund_amount']]);
+
+        $this->postJson("/api/v1/move-outs/{$m['id']}/settle", ['refund_method' => 'cash', 'notify_tenant' => false])->assertOk();
+        $this->assertSame(Charge::STATUS_PAID, $utility->refresh()->status);
+        $this->assertSame(0, Payment::query()->where('method', 'deposit')->count());
+    }
 }

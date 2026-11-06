@@ -28,6 +28,7 @@ return [
         'landlord' => 'Landlord',
         'deposit' => 'Deposit held',
         'no_deductions' => 'No deductions',
+        'prepaid' => 'Rent already paid for after the move-out',
         'refund' => 'Refund',
         'refunded_by' => 'Refunded by :method',
         'balance' => 'The deposit did not cover everything: :amount is still owed.',

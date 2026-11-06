@@ -38,6 +38,8 @@ class MoveOut extends Model
             'deposit_held' => 'integer',
             'deposit_applied' => 'integer',
             'deposit_kept' => 'integer',
+            'prepaid' => 'integer',
+            'prepaid_to_unpaid' => 'integer',
             'refund_amount' => 'integer',
             'balance_owed' => 'integer',
         ];

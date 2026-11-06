@@ -16,6 +16,7 @@ return [
     'rent' => 'የ:period ኪራይ',
     'utility' => 'የ:period የአገልግሎት ድርሻ (:meter)',
     'payment' => 'ክፍያ (:method)፣ ደረሰኝ :receipt',
+    'prepaid_refund' => 'አስቀድሞ የተከፈለ ኪራይ፣ በመልቀቂያ ጊዜ የተመለሰ',
     'owed' => ':amount ዕዳ',
     'credit' => ':amount በቅድሚያ የተከፈለ',
     'none' => 'በዚህ ጊዜ የተጠየቀም የተከፈለም የለም።',
