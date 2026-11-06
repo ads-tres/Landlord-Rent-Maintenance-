@@ -18,6 +18,7 @@ class CaretakerLimits
     public const LANDLORD_ONLY = [
         V1\ReportController::class.'@quarterly',
         V1\ReportController::class.'@annual',
+        V1\UnitHistoryController::class.'@vacancy',
         V1\ExpenseController::class.'@*',
         V1\OnlineRentController::class.'@show',
         V1\OnlineRentController::class.'@update',

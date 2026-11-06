@@ -12,6 +12,10 @@ use App\Models\Payment;
 use App\Models\Property;
 use App\Models\RentRefund;
 use App\Models\Unit;
+use App\Services\Reports\AnnualReport;
+use App\Services\Units\UnitOccupancy;
+use App\Support\DateDisplay;
+use Carbon\CarbonImmutable;
 use Illuminate\Http\JsonResponse;
 
 /** GET /dashboard — totals for the home screen. Amounts in santim. */
@@ -50,6 +54,18 @@ class DashboardController extends Controller
             'properties' => Property::query()->count(),
             'units' => Unit::query()->count(),
             'vacant_units' => Unit::query()->where('status', Unit::STATUS_VACANT)->count(),
+            // Rent lost to empty units so far this (fiscal) year; landlords only.
+            'vacancy_lost_this_year' => request()->user()->isCaretaker() ? null : $this->vacancyLost(),
         ]]);
+    }
+
+    private function vacancyLost(): int
+    {
+        $calendar = request()->user()->actingLandlord()->calendar_pref ?: DateDisplay::GREGORIAN;
+        [$from, $to] = AnnualReport::range(AnnualReport::yearOf(CarbonImmutable::today(), $calendar), $calendar);
+        $occupancy = app(UnitOccupancy::class);
+
+        return (int) Unit::query()->with(['listings', 'leases'])->get()
+            ->sum(fn (Unit $u) => $occupancy->within($u, $from, $to)['lost']);
     }
 }
