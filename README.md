@@ -294,6 +294,16 @@ Landlord alerts go to the landlord's phone as push notifications through Firebas
 
 Amounts are numbers formatted as `#,##0.00`, so they add up in Excel. Sheet names and headers follow the app language.
 
+## Statement of account
+
+`GET /leases/{id}/statement?from=&to=&language=am|en&format=json|pdf` returns a statement for one lease. It shows:
+- the balance brought forward from before `from`
+- every charge, on its due date, and every payment, on the day it was paid (with method, receipt number and reference)
+- a running balance, shown as owed or paid in advance
+- totals and the balance at the end
+
+By default it covers the whole lease up to today. The PDF can be shared with the tenant or used in a dispute. Caretakers can view it too.
+
 ## Lease agreement and registration
 
 - `GET /leases/{id}/agreement?language=am|en|both` generates the written lease as a PDF.
