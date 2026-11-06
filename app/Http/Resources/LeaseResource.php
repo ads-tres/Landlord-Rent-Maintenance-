@@ -29,6 +29,7 @@ class LeaseResource extends JsonResource
             'condition_notes' => $this->condition_notes,
             'registered_at' => $this->registered_at?->toDateString(),
             'status' => $this->status,
+            'pay_url' => $this->status === Lease::STATUS_ACTIVE && $request->user()?->acceptsOnlineRent() ? $this->payUrl() : null,
             'repair_url' => $this->status === Lease::STATUS_ACTIVE ? $this->repairUrl() : null,
             'days_until_end' => $this->status === Lease::STATUS_ACTIVE
                 ? (int) today()->diffInDays($this->end_date, false)

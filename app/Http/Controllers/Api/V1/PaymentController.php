@@ -10,8 +10,8 @@ use App\Models\Payment;
 use App\Models\SmsMessage;
 use App\Services\Payments\PaymentRecorder;
 use App\Services\Payments\ReceiptData;
+use App\Services\Payments\ReceiptNotifier;
 use App\Services\Sms\SmsNotifier;
-use App\Support\DateDisplay;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
@@ -108,18 +108,6 @@ class PaymentController extends Controller
 
     private function queueReceiptSms(Payment $payment, string $locale): SmsMessage
     {
-        $payment->loadMissing(['landlord', 'tenant', 'lease.unit', 'allocations.charge']);
-        $periods = $payment->allocations->map(fn ($a) => $a->charge->period)->sort()->values();
-        $calendar = $payment->landlord->calendar_pref ?? 'gregorian';
-
-        $body = __('sms.receipt', [
-            'amount' => ReceiptData::birr($payment->amount, $locale),
-            'unit' => $payment->lease?->unit?->label ?? '',
-            'months' => DateDisplay::periodRange($periods->first(), $periods->last(), $locale, $calendar),
-            'url' => $payment->receiptUrl(),
-            'app' => config('app.name'),
-        ], $locale);
-
-        return $this->sms->toTenant($payment->tenant, SmsMessage::KIND_RECEIPT, $body, $payment);
+        return app(ReceiptNotifier::class)->send($payment, $locale);
     }
 }

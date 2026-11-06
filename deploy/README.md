@@ -45,6 +45,7 @@ caches config and restarts the queue worker.
 | Late flags | `rent:mark-late` | daily 00:30 |
 | Rent reminders | `rent:send-reminders` | daily 10:05 |
 | Database backup | `backup:database` (14 days kept) | daily 02:10 |
+| Chapa check for missed webhooks | `chapa:reconcile` | every 15 min |
 
 Check them with `sudo supervisorctl status`, `tail /var/www/kiray/storage/logs/worker.log`, and
 `sudo -u kiray php /var/www/kiray/artisan schedule:list`.

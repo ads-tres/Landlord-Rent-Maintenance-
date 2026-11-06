@@ -13,6 +13,12 @@ class UpdateProfileRequest extends FormRequest
             'locale' => ['sometimes', 'in:am,en'],
             'calendar_pref' => ['sometimes', 'in:ethiopian,gregorian'],
             'sms_reminders' => ['sometimes', 'boolean'],
+            // Online rent can only be switched on with an active payout account.
+            'online_rent_enabled' => ['sometimes', 'boolean', function ($attribute, $value, $fail) {
+                if ($value && ! $this->user()->payoutAccount?->isActive()) {
+                    $fail(__('chapa.need_payout_account'));
+                }
+            }],
         ];
     }
 }

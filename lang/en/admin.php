@@ -21,6 +21,7 @@ return [
         'on_time' => 'Rent paid on time (this month)',
         'sms' => 'SMS sent this month',
         'sms_failed' => ':count failed',
+        'online' => 'Online rent payments this month (Br :amount)',
         'waitlist' => 'Waitlist',
         'waitlist_3plus' => ':count with 3+ units',
         'weeks' => 'Weekly active landlords',

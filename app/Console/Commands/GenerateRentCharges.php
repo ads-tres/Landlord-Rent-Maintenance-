@@ -9,13 +9,15 @@ use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
 /**
- * Daily: creates this month's rent charge for every active lease (safe to re-run),
+ * Daily: creates rent charges due up to 5 days ahead for every active lease (safe to re-run),
  * and brings each lease's current rent up to date with scheduled rent changes.
  */
 #[Signature('rent:generate-charges')]
 #[Description('Create missing rent charges up to the current month for all active leases')]
 class GenerateRentCharges extends Command
 {
+    public const LOOKAHEAD_DAYS = 5;
+
     public function handle(RentSchedule $schedule): int
     {
         $created = 0;
@@ -26,7 +28,9 @@ class GenerateRentCharges extends Command
             ->with('rentChanges')
             ->chunkById(200, function ($leases) use ($schedule, &$created) {
                 foreach ($leases as $lease) {
-                    $created += $schedule->sync($lease)->count();
+                    // Look 5 days ahead so next month's charge exists in time for the
+                    // "due in 3 days" reminder (rent due on the 1st would otherwise be missed).
+                    $created += $schedule->sync($lease, now()->addDays(self::LOOKAHEAD_DAYS))->count();
 
                     $current = $schedule->rentFor($lease, now()->format('Y-m'));
                     if ($current !== $lease->monthly_rent) {

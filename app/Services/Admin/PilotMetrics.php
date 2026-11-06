@@ -37,6 +37,8 @@ class PilotMetrics
             'on_time' => $onTime,
             'sms_this_month' => (int) SmsMessage::query()->where('created_at', '>=', now()->startOfMonth())->sum('segments'),
             'sms_failed_this_month' => SmsMessage::query()->where('created_at', '>=', now()->startOfMonth())->where('status', 'failed')->count(),
+            'online_payments' => DB::table('chapa_transactions')->where('status', 'success')->where('verified_at', '>=', now()->startOfMonth())->count(),
+            'online_amount' => (int) DB::table('chapa_transactions')->where('status', 'success')->where('verified_at', '>=', now()->startOfMonth())->sum('amount'),
             'waitlist' => DB::table('waitlist_signups')->count(),
             'waitlist_3plus' => DB::table('waitlist_signups')->where('unit_count', '>=', 3)->count(),
         ];

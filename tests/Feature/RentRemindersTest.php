@@ -57,4 +57,16 @@ class RentRemindersTest extends TestCase
         $this->artisan('rent:send-reminders')->expectsOutput('Queued 0 reminder(s).');
         $this->assertEmpty($this->sms->sent);
     }
+
+    public function test_reminder_three_days_before_rent_due_on_the_first(): void
+    {
+        // Regression: next month's charge used to be created only on the 1st, too late for this reminder.
+        $this->travelTo('2026-11-28 00:15');
+        $this->leaseDueOn(1);
+        $this->artisan('rent:generate-charges');
+
+        $this->travelTo('2026-11-28 10:05');
+        $this->artisan('rent:send-reminders')->expectsOutput('Queued 1 reminder(s).');
+        $this->assertStringContainsString('due on 1 December 2026', $this->sms->sent[0]['message']);
+    }
 }

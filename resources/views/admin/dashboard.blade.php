@@ -6,6 +6,7 @@
     <div class="card stat"><div class="v">{{ $o['weekly_active'][0]['active'] }}</div><div class="l">{{ __('admin.dashboard.weekly_active') }}</div></div>
     <div class="card stat"><div class="v">{{ $o['on_time']['percent'] !== null ? $o['on_time']['percent'].'%' : '—' }}</div><div class="l">{{ __('admin.dashboard.on_time') }} ({{ $o['on_time']['on_time'] }}/{{ $o['on_time']['due'] }})</div></div>
     <div class="card stat"><div class="v">{{ $o['sms_this_month'] }}</div><div class="l">{{ __('admin.dashboard.sms') }}@if ($o['sms_failed_this_month']) · <span class="err">{{ __('admin.dashboard.sms_failed', ['count' => $o['sms_failed_this_month']]) }}</span>@endif</div></div>
+    <div class="card stat"><div class="v">{{ $o['online_payments'] }}</div><div class="l">{{ __('admin.dashboard.online', ['amount' => number_format($o['online_amount'] / 100)]) }}</div></div>
     <div class="card stat"><div class="v">{{ $o['waitlist'] }}</div><div class="l">{{ __('admin.dashboard.waitlist') }} · {{ __('admin.dashboard.waitlist_3plus', ['count' => $o['waitlist_3plus']]) }}</div></div>
 </div>
 

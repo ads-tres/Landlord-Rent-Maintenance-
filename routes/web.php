@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Web\ListingPageController;
+use App\Http\Controllers\Web\PayPageController;
 use App\Http\Controllers\Web\ReceiptController;
 use App\Http\Controllers\Web\RepairPageController;
 use App\Http\Controllers\Web\WaitlistController;
@@ -61,4 +62,11 @@ Route::prefix('l/{slug}')->where(['slug' => '[a-z0-9]{8}'])->name('listings.publ
     Route::get('verify', [ListingPageController::class, 'showVerify'])->name('verify');
     Route::post('verify', [ListingPageController::class, 'verify'])->middleware('throttle:10,10')->name('verify.submit');
     Route::post('report', [ListingPageController::class, 'report'])->middleware('throttle:3,60')->name('report');
+});
+
+// Tenant online rent page (Chapa checkout). Works only when the landlord has online rent on.
+Route::prefix('pay/{token}')->where(['token' => '[a-z0-9]{10}'])->name('pay.')->group(function () {
+    Route::get('/', [PayPageController::class, 'show'])->middleware('throttle:60,1')->name('show');
+    Route::post('/', [PayPageController::class, 'start'])->middleware('throttle:10,10')->name('start');
+    Route::get('done', [PayPageController::class, 'done'])->middleware('throttle:30,1')->name('done');
 });
