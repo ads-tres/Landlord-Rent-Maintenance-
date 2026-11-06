@@ -384,6 +384,15 @@ The page stays open, read-only, for 90 days after the lease ends. Leases include
 - Receipts and rent reminders end with "Your account: {link}" when that doesn't cost an extra SMS segment. On Telegram the line is always added.
 - Tenants get their links when they agree to messages in the Telegram bot.
 
+## Rent increase notices
+
+- `POST /leases/{id}/rent-change {new_rent, effective_date, tenant_agreed?, notify_tenant?}`: an increase must start at least the notice period from today (admin setting, 30 days by default) unless `tenant_agreed` is true. It must also stay within the yearly cap. Decreases need no notice.
+- The tenant gets an SMS (or Telegram) right away, and `rent:change-reminders` (daily 09:40) reminds them 7 days before the new rent starts.
+- `GET /leases/{id}/rent-changes/{change}/notice?lang=am|en|both`: a notice letter PDF with a line for the tenant to sign.
+- `DELETE /leases/{id}/rent-changes/{change}`: cancels a change that hasn't started yet. Charges made for it go back to the old rent, and a tenant who was told gets a cancellation text.
+- `GET /rules` returns `rent_notice_days` and `earliest_increase_date`.
+- Confirm the current legal notice period with a lawyer and set it in the admin settings.
+
 ## Your data and deleting the account
 
 - `GET /account/export` downloads a ZIP of UTF-8 CSV files that open in Excel:

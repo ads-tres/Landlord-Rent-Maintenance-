@@ -13,5 +13,8 @@ return [
     'portal_link' => 'Your rent, receipts and repairs for :unit: :url - :app',
     'team_invite' => ':landlord added you as a caretaker on :app. Install the app and log in with this phone number.',
     'lease_renewed' => 'Your lease for :unit is renewed until :date. Rent from :from: :rent. - :app',
+    'rent_change' => 'Notice: rent for :unit changes from :old to :new starting :date. Other lease terms stay the same. - :landlord',
+    'rent_change_reminder' => 'Reminder: from :date, rent for :unit is :new. - :landlord',
+    'rent_change_cancelled' => 'The rent change for :unit from :date is cancelled. Rent stays :old. - :landlord',
     'announcement' => ':property: :body - :landlord',
 ];

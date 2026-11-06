@@ -13,6 +13,8 @@ class Setting extends Model
 {
     public const RENT_CAP_PERCENT = 'rent_cap_percent';
 
+    public const RENT_NOTICE_DAYS = 'rent_notice_days';
+
     protected $primaryKey = 'key';
 
     public $incrementing = false;

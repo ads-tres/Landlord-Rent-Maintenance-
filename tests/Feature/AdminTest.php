@@ -202,8 +202,9 @@ class AdminTest extends TestCase
     {
         $this->actingAs($this->admin, 'web');
 
-        $this->put('/admin/settings', ['rent_cap_percent' => '12'])->assertRedirect();
+        $this->put('/admin/settings', ['rent_cap_percent' => '12', 'rent_notice_days' => '60'])->assertRedirect();
         $this->assertSame('12', Setting::get(Setting::RENT_CAP_PERCENT));
+        $this->assertSame('60', Setting::get(Setting::RENT_NOTICE_DAYS));
 
         $this->actingAsLandlord();
         $this->getJson('/api/v1/rules')->assertJsonPath('data.rent_cap_percent', 12);

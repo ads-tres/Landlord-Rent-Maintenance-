@@ -88,6 +88,8 @@ return [
     ],
     'settings' => [
         'rent_cap' => 'Yearly rent-increase cap (%)',
+        'rent_notice' => 'Notice before a rent increase (days)',
+        'rent_notice_help' => 'How many days ahead a landlord must give written notice of an increase. Confirm the current rule with a lawyer before changing it.',
         'rent_cap_help' => 'Set by the city each fiscal year (11.5% for 2026/27). Used to refuse rent increases above it.',
         'save' => 'Save',
     ],

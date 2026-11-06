@@ -17,6 +17,8 @@ class RentChangeRequest extends FormRequest
                 'after_or_equal:'.$lease->start_date->toDateString(),
                 'before_or_equal:'.$lease->end_date->toDateString(),
             ],
+            'tenant_agreed' => ['sometimes', 'boolean'],
+            'notify_tenant' => ['sometimes', 'boolean'],
         ];
     }
 }

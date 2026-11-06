@@ -162,14 +162,18 @@ class AdminController extends Controller
 
     public function settings(RentRules $rules): View
     {
-        return view('admin.settings', ['cap' => $rules->capPercent()]);
+        return view('admin.settings', ['cap' => $rules->capPercent(), 'notice' => $rules->noticeDays()]);
     }
 
     public function updateSettings(Request $request): RedirectResponse
     {
-        $data = $request->validate(['rent_cap_percent' => ['required', 'numeric', 'min:0', 'max:100']]);
+        $data = $request->validate([
+            'rent_cap_percent' => ['required', 'numeric', 'min:0', 'max:100'],
+            'rent_notice_days' => ['required', 'integer', 'min:0', 'max:365'],
+        ]);
         Setting::put(Setting::RENT_CAP_PERCENT, (string) $data['rent_cap_percent']);
-        Log::info('Rent cap changed', ['admin' => $request->user()->id, 'cap' => $data['rent_cap_percent']]);
+        Setting::put(Setting::RENT_NOTICE_DAYS, (string) $data['rent_notice_days']);
+        Log::info('Rent rules changed', ['admin' => $request->user()->id, 'cap' => $data['rent_cap_percent'], 'notice_days' => $data['rent_notice_days']]);
 
         return back()->with('status', __('admin.saved'));
     }
