@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\ChargeController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\LeaseController;
+use App\Http\Controllers\Api\V1\ListingController;
 use App\Http\Controllers\Api\V1\MaintenanceController;
 use App\Http\Controllers\Api\V1\MeterController;
 use App\Http\Controllers\Api\V1\PaymentController;
@@ -51,6 +52,15 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('leases', LeaseController::class)->except('destroy');
         Route::post('leases/{lease}/end', [LeaseController::class, 'end']);
         Route::post('leases/{lease}/rent-change', [LeaseController::class, 'rentChange']);
+        Route::post('leases/{lease}/activate', [LeaseController::class, 'activate']);
+
+        Route::get('listings', [ListingController::class, 'index']);
+        Route::post('units/{unit}/listing', [ListingController::class, 'store']);
+        Route::get('listings/{listing}', [ListingController::class, 'show']);
+        Route::patch('listings/{listing}', [ListingController::class, 'update']);
+        Route::post('listings/{listing}/photos', [ListingController::class, 'addPhoto']);
+        Route::get('listings/{listing}/applications', [ListingController::class, 'applications']);
+        Route::patch('applications/{application}', [ListingController::class, 'updateApplication']);
 
         Route::get('charges', [ChargeController::class, 'index']);
         Route::get('rules', RulesController::class);

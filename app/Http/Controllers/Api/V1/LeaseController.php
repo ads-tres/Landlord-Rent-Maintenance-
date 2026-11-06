@@ -118,7 +118,7 @@ class LeaseController extends Controller
                 ->whereDoesntHave('allocations')
                 ->delete();
 
-            $lease->unit()->update(['status' => Unit::STATUS_VACANT]);
+            $lease->unit->update(['status' => Unit::STATUS_VACANT]); // model update so vacant_since is set
         });
 
         return new LeaseResource($this->loadDetail($lease->refresh()));
@@ -163,6 +163,46 @@ class LeaseController extends Controller
             }
 
             $this->schedule->reprice($lease, $effective->format('Y-m'));
+        });
+
+        return new LeaseResource($this->loadDetail($lease->refresh()));
+    }
+
+    /**
+     * POST /leases/{id}/activate — turns a draft lease (from an approved application) into an
+     * active one: the directive's condition notes are required, the unit becomes occupied and
+     * rent charges start.
+     */
+    public function activate(Request $request, Lease $lease): LeaseResource
+    {
+        Gate::authorize('update', $lease);
+        abort_unless($lease->status === Lease::STATUS_DRAFT, 409, __('leases.not_draft'));
+
+        $data = $request->validate([
+            'condition_notes' => ['required', 'string', 'max:5000'],
+            'start_date' => ['sometimes', 'date_format:Y-m-d'],
+            'end_date' => ['sometimes', 'date_format:Y-m-d'],
+            'monthly_rent' => ['sometimes', 'integer', 'min:100'],
+            'deposit' => ['sometimes', 'integer', 'min:0'],
+            'due_day' => ['sometimes', 'integer', 'between:1,30'],
+        ]);
+
+        DB::transaction(function () use ($lease, $data) {
+            $unit = Unit::query()->lockForUpdate()->findOrFail($lease->unit_id);
+            if ($unit->activeLease()->exists()) {
+                throw ValidationException::withMessages(['unit_id' => __('leases.unit_occupied')]);
+            }
+
+            $lease->fill($data);
+            $minEnd = CarbonImmutable::parse($lease->start_date)->addYears(RentRules::MIN_LEASE_YEARS)->subDay();
+            if (CarbonImmutable::parse($lease->end_date)->lt($minEnd)) {
+                throw ValidationException::withMessages(['end_date' => __('leases.min_term', ['years' => RentRules::MIN_LEASE_YEARS, 'date' => $minEnd->toDateString()])]);
+            }
+            $lease->status = Lease::STATUS_ACTIVE;
+            $lease->save();
+
+            $unit->update(['status' => Unit::STATUS_OCCUPIED]);
+            $this->schedule->sync($lease);
         });
 
         return new LeaseResource($this->loadDetail($lease->refresh()));

@@ -10,7 +10,8 @@ class OtpService
 {
     public function __construct(private readonly SmsSender $sms) {}
 
-    public function send(string $phone, string $locale = 'am'): void
+    /** @param  string  $template  translation key with a :code placeholder */
+    public function send(string $phone, string $locale = 'am', string $template = 'sms.otp'): void
     {
         $length = (int) config('sms.otp.length');
         $code = str_pad((string) random_int(0, 10 ** $length - 1), $length, '0', STR_PAD_LEFT);
@@ -24,7 +25,7 @@ class OtpService
             'expires_at' => now()->addMinutes((int) config('sms.otp.ttl_minutes')),
         ]);
 
-        $this->sms->send($phone, __('sms.otp', ['code' => $code], $locale));
+        $this->sms->send($phone, __($template, ['code' => $code], $locale));
     }
 
     public function verify(string $phone, string $code): bool

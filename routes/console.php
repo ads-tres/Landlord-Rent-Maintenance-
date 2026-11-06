@@ -22,3 +22,6 @@ Schedule::command('backup:database')->dailyAt('02:10')->withoutOverlapping()->on
 
 // Generator / water tank / pump service reminders to landlords (Telegram).
 Schedule::command('assets:remind')->dailyAt('08:10')->withoutOverlapping()->onOneServer();
+
+// Listings: expire after 30 days, delete old applications, remind about long vacancies.
+Schedule::command('listings:daily')->dailyAt('03:10')->withoutOverlapping()->onOneServer();
