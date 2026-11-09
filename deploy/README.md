@@ -40,12 +40,20 @@ caches config and restarts the queue worker.
 
 | What | How | When |
 | --- | --- | --- |
-| SMS sending | supervisor `kiray-worker` (`queue:work`) | always |
+| SMS / Telegram sending, and texts held for quiet hours | supervisor `kiray-worker` (`queue:work`) | always |
 | Monthly charges | `rent:generate-charges` | daily 00:15 |
 | Late flags | `rent:mark-late` | daily 00:30 |
-| Rent reminders | `rent:send-reminders` | daily 10:05 |
 | Database backup | `backup:database` (14 days kept) | daily 02:10 |
+| Listing expiry and vacancy reminders | `listings:daily` | daily 03:10 |
+| Delete accounts whose 30 days are up | `accounts:purge` | daily 03:40 |
+| Equipment service reminders | `assets:remind` | daily 08:10 |
+| Lease renewal reminders | `leases:renewal-reminders` | daily 09:10 |
+| Rent increase reminders (a week before) | `rent:change-reminders` | daily 09:40 |
+| Rent reminders | `rent:send-reminders` | daily 10:05 |
+| Payment plan reminders | `arrears:plans` | daily 10:20 |
 | Chapa check for missed webhooks | `chapa:reconcile` | every 15 min |
+
+Times are Addis Ababa time (`APP_TIMEZONE`). The worker must be running, or no SMS goes out at all.
 
 Check them with `sudo supervisorctl status`, `tail /var/www/kiray/storage/logs/worker.log`, and
 `sudo -u kiray php /var/www/kiray/artisan schedule:list`.

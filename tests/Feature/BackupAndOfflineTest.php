@@ -20,6 +20,7 @@ class BackupAndOfflineTest extends TestCase
     public function test_backup_writes_a_gzip_file_and_prunes_old_ones(): void
     {
         Storage::fake('local');
+        $original = config('database.default');
         $db = tempnam(sys_get_temp_dir(), 'db');
         file_put_contents($db, 'SQLite format 3'.str_repeat("\0", 1000));
         config(['database.connections.backup_test' => ['driver' => 'sqlite', 'database' => $db], 'database.default' => 'backup_test']);
@@ -34,7 +35,7 @@ class BackupAndOfflineTest extends TestCase
         $this->assertStringStartsWith('backups/backup_test-', $files[0]);
         $this->assertStringStartsWith('SQLite format 3', gzdecode(Storage::disk('local')->get($files[0])));
 
-        config(['database.default' => 'sqlite']);
+        config(['database.default' => $original]);
         @unlink($db);
     }
 

@@ -21,6 +21,9 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('leases', fn (Blueprint $table) => $table->dropColumn('portal_token'));
+        Schema::table('leases', function (Blueprint $table) {
+            $table->dropUnique(['portal_token']);
+            $table->dropColumn('portal_token');
+        });
     }
 };
