@@ -16,5 +16,6 @@ return [
     'rent_change' => 'Notice: rent for :unit changes from :old to :new starting :date. Other lease terms stay the same. - :landlord',
     'rent_change_reminder' => 'Reminder: from :date, rent for :unit is :new. - :landlord',
     'rent_change_cancelled' => 'The rent change for :unit from :date is cancelled. Rent stays :old. - :landlord',
+    'rent_nudge' => 'Rent of :amount for :unit (:month) is still unpaid. It was due on :date. Please pay soon. - :landlord',
     'announcement' => ':property: :body - :landlord',
 ];

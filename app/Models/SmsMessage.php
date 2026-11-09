@@ -15,6 +15,8 @@ class SmsMessage extends Model
 
     public const KIND_RENT_CHANGE = 'rent_change';
 
+    public const KIND_RENT_NUDGE = 'rent_nudge';
+
     public const KIND_RENT_CHANGE_REMINDER = 'rent_change_reminder';
 
     public const KIND_RENT_CHANGE_CANCELLED = 'rent_change_cancelled';

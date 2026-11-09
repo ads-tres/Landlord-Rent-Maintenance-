@@ -20,6 +20,7 @@ class CaretakerLimits
         V1\ReportController::class.'@annual',
         V1\UnitHistoryController::class.'@vacancy',
         V1\TenantRecordController::class.'@notes',
+        V1\RentReminderController::class.'@*',
         V1\ExpenseController::class.'@*',
         V1\OnlineRentController::class.'@show',
         V1\OnlineRentController::class.'@update',
