@@ -410,6 +410,11 @@ The page stays open, read-only, for 90 days after the lease ends. Leases include
 - `PUT /tenants/{id}/notes {notes}`: the landlord's private notes (landlords only; caretakers don't see them). Notes are included in the tenant's data export and cleared when the tenant is anonymized.
 - A short version appears in `GET /leases/{id}/renewal-check` (`tenant_record`) and on applications from someone who rented before (`former_tenant`, matched by phone).
 
+## Bulk rent reminder
+
+- `GET /rent/reminders?period=YYYY-MM` (default this month): every active lease still owing rent for the month, the amount owed, and a sample message. It also lists who is skipped: tenants who turned reminders off, and anyone already reminded this way today.
+- `POST /rent/reminders {period?, lease_ids?}`: sends the reminders (only to `lease_ids` when given). It goes by SMS, or Telegram when linked, so quiet hours apply. Landlords only, throttled to 10 calls an hour.
+
 ## Your data and deleting the account
 
 - `GET /account/export` downloads a ZIP of UTF-8 CSV files that open in Excel:

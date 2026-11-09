@@ -24,6 +24,7 @@ use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\Api\V1\PortalLinkController;
 use App\Http\Controllers\Api\V1\PropertyController;
 use App\Http\Controllers\Api\V1\RentChangeController;
+use App\Http\Controllers\Api\V1\RentReminderController;
 use App\Http\Controllers\Api\V1\RepairLinkController;
 use App\Http\Controllers\Api\V1\ReportController;
 use App\Http\Controllers\Api\V1\RulesController;
@@ -75,6 +76,8 @@ Route::prefix('v1')->group(function () {
         Route::get('units', UnitListController::class);
         Route::get('units/{unit}/history', [UnitHistoryController::class, 'show']);
         Route::get('vacancy', [UnitHistoryController::class, 'vacancy']);
+        Route::get('rent/reminders', [RentReminderController::class, 'preview']);
+        Route::post('rent/reminders', [RentReminderController::class, 'send'])->middleware('throttle:10,60');
         Route::apiResource('tenants', TenantController::class);
         Route::get('tenants/{tenant}/messages', TenantMessagesController::class);
         Route::get('tenants/{tenant}/record', [TenantRecordController::class, 'show']);

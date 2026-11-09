@@ -16,5 +16,6 @@ return [
     'rent_change' => 'ማስታወቂያ፦ የ:unit ኪራይ ከ:date ጀምሮ ከ:old ወደ :new ይቀየራል። ሌሎች የውሉ ሁኔታዎች አይቀየሩም። - :landlord',
     'rent_change_reminder' => 'ማስታወሻ፦ ከ:date ጀምሮ የ:unit ኪራይ :new ነው። - :landlord',
     'rent_change_cancelled' => 'ከ:date ጀምሮ ሊደረግ የነበረው የ:unit ኪራይ ለውጥ ተሰርዟል። ኪራዩ :old ሆኖ ይቀጥላል። - :landlord',
+    'rent_nudge' => 'የ:unit የ:month ኪራይ :amount እስካሁን አልተከፈለም። የሚከፈልበት ቀን :date ነበር። እባክዎ በቅርቡ ይክፈሉ። - :landlord',
     'announcement' => ':property፦ :body - :landlord',
 ];
