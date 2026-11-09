@@ -49,6 +49,7 @@ class AccountDataTest extends TestCase
 
         $this->assertContains('payments.csv', $names);
         $this->assertContains('tenants.csv', $names);
+        $this->assertContains('rent_changes.csv', $names);
         $this->assertContains('README.txt', $names);
         $payments = $zip->getFromName('payments.csv');
         $this->assertStringStartsWith("\xEF\xBB\xBF", $payments);
